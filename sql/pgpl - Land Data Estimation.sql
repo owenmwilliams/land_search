@@ -59,6 +59,9 @@ ALTER TABLE county_population_csv
 ALTER TABLE county_population_csv 
 	ADD COLUMN est_base varchar(10);
 
+ALTER TABLE county_population_csv 
+	ADD COLUMN comps varchar(500);
+
 UPDATE county_population_csv cpc
 	SET land_value_estimate = land_value_asis_all::varchar
 	FROM county_landdata_csv clc
@@ -79,6 +82,10 @@ UPDATE county_population_csv
 UPDATE county_population_csv cpc
 	SET land_value_estimate = 'estimate'
 	WHERE land_value_estimate IS NULL;
+
+UPDATE county_population_csv 
+	SET comps = 'no comp'
+	WHERE est_base = 'base';
 
 SELECT * FROM county_population_csv cpc WHERE CAST(date_part('year', cpc.date_code) AS varchar) = '2018' ORDER BY state, county;
 
@@ -119,9 +126,17 @@ interim_table AS (
 SELECT * FROM interim_table WHERE comp_count > 5
 	;
 
+
+ -- Count est vs. base in pop
+
+SELECT count(est_base) FROM county_population_csv cpc WHERE est_base = 'base';
+SELECT count(est_base) FROM county_population_csv cpc WHERE est_base = 'est';
+SELECT * FROM county_population_csv cpc ;
+
  -- Update land_value_estimate by calling value estimation function
 
-SELECT state, county, land_value_estimate FROM county_population_csv cpc
+
+SELECT state, county, land_value_estimate, est_base, comps FROM county_population_csv cpc
  WHERE trim(cpc.state) = 'Georgia'
  AND cpc.county = 'Seminole County'
  AND CAST (date_part('year', cpc.date_code) AS varchar) = '2018';
@@ -133,16 +148,22 @@ SELECT est_value::int FROM est_LandValue(20::decimal, 1::decimal, 2::int)
 	AND est_county = 'Seminole County';
 
 UPDATE county_population_csv cpc
-	SET land_value_estimate = est.est_value::int
+	SET land_value_estimate = est.est_value::int, est_base = '(20,1,2)'
 	FROM est_LandValue(20::decimal, 1::decimal, 2::int) AS est	
 	WHERE trim(cpc.state) = est.est_state 
 	AND cpc.county = est.est_county 
 	AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018'
-	AND trim(cpc.state) = 'Georgia'
-	AND cpc.county = 'Seminole County';
+	AND cpc.est_base = 'est'
+	AND cpc.county = 'Seminole County'
+	AND trim(cpc.state) = 'Georgia';
 
 UPDATE county_population_csv cpc
-	SET land_value_estimate = 'estimate'
+	SET land_value_estimate = 'test', est_base = 'test', comps = 'test'
+	LIMIT 1;
+	
+
+UPDATE county_population_csv cpc
+	SET land_value_estimate = 'estimate', est_base = 'est'
 	WHERE trim(cpc.state) = 'Georgia'
 	AND cpc.county = 'Seminole County'
 	AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
@@ -153,7 +174,9 @@ SELECT A.state, A.county, C.land_value_asis_all, E.population, B.state, B.county
 			ST_Distance(A.geom, B.geom) AS dist
 		FROM county_latlong_csv AS A	
 		INNER JOIN county_latlong_csv AS B
-			ON ST_Distance(A.geom, B.geom) < 3.0	
+			ON ST_Distance(A.geom, B.geom) < 10.0
+			AND A.state = 'Georgia'
+			AND A.county = 'Seminole County'
 		INNER JOIN county_landdata_csv AS D
 			ON B.state = D.state 
 			AND B.county = D.county
@@ -166,7 +189,7 @@ SELECT A.state, A.county, C.land_value_asis_all, E.population, B.state, B.county
 			ON B.state = trim(F.state)
 			AND B.county = F.county
 			AND CAST(date_part('year', F.date_code) AS varchar) = '2018'
-			AND abs(E.population - F. population) < E.population*0.1
+			AND abs(E.population - F. population) < E.population*5
 		FULL OUTER JOIN county_landdata_csv AS C
 			ON A.state = C.state 
 			AND A.county = C.county 
