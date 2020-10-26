@@ -1,8 +1,8 @@
 import psycopg2
 from datetime import datetime
 from psycopg2 import sql
-from fltr.county_return import find_county
-from db.cur import con_cur
+from fltr import county_return
+from est import cur
 import numpy as np
 
 temp1 = find_county()
