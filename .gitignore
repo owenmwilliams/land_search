@@ -2,6 +2,9 @@
 *.csv
 *.txt
 *.json
+.DS_Store
+/venv
+kill*
 
 # Python.gitignore from github/gitignore
 # Byte-compiled / optimized / DLL files
