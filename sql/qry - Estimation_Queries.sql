@@ -21,15 +21,20 @@ SELECT * FROM testtable;
 SELECT concat(comp_st::TEXT, ', ', comp_cty::TEXT) FROM testtable;
 
 WITH concat_list AS (
-		SELECT CONCAT(comp_st::TEXT, ', ', comp_cty::TEXT) FROM testtable
+		SELECT CONCAT(comp_st::varchar, ', ', comp_cty::varchar) FROM testtable
 		)
 	UPDATE county_population_csv cpc
 		SET comps = subquery.concat
-		FROM (SELECT STRING_AGG(concat_list::text, '; ') FROM concat_list) AS subquery
+		FROM (SELECT STRING_AGG(concat_list::varchar, '; ') FROM concat_list) AS subquery
 		WHERE trim(cpc.state) = 'Georgia'
 		AND cpc.county = 'Seminole County'
 		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
 	
+
+SELECT comps FROM county_population_csv cpc 
+	WHERE trim(cpc.state) = 'Georgia'
+		AND cpc.county = 'Seminole County'
+		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018'; 
 	
  -- UPDATE pop TABLE est_base COLUMN WITH query constraints FROM est query
 	

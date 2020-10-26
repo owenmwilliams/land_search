@@ -1,7 +1,8 @@
 import psycopg2
 from datetime import datetime
 from psycopg2 import sql
-from county_return import find_county
+from fltr.county_return import find_county
+from db.cur import con_cur
 import numpy as np
 
 temp1 = find_county()
@@ -11,10 +12,9 @@ state = temp2[1].strip()
 print(county)
 print(state)
 
-con = psycopg2.connect(database='owenwilliams', host="localhost", port="5434")
-cur = con.cursor()
+cur = con_cur()
 cur.execute("""
-            SELECT * FROM est_LandValue(10, 3, 5, %s, %s) 
+            SELECT comp_st, comp_cty FROM est_LandValue(10, 3, 5, %s, %s) 
         """, (state, county))
 comp_states = cur.fetchall()
 print(comp_states)
