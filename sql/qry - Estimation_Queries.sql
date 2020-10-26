@@ -6,18 +6,52 @@ SELECT county, state
 		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018'
 	LIMIT 1;
 	
+
  -- RETURN list OF comp cty, state
 
-CREATE TABLE testtable AS SELECT * FROM est_LandValue(10, 3, 5, 'Georgia', 'Seminole County');
+DROP TABLE IF EXISTS testtable;
 
- -- UPDATE pop TABLE WITH restults FROM list *****COME BACK TO HERE*****
+CREATE TABLE testtable AS SELECT * FROM est_LandValue(10, 3, 5, 'Georgia', 'Seminole County');
+SELECT * FROM est_LandValue(10, 3, 5, 'Georgia', 'Seminole County');
 
 SELECT * FROM testtable;
-SELECT * FROM county_population_csv cpc WHERE trim(cpc.state) = 'Georgia' AND cpc.county = 'Seminole County';
+
+ -- UPDATE pop TABLE comps COLUMN WITH restults FROM list *****COME BACK TO HERE - UPDATE QUERY NO LONGER WORKING***** 
+
+SELECT concat(comp_st::TEXT, ', ', comp_cty::TEXT) FROM testtable;
+
+WITH concat_list AS (
+		SELECT CONCAT(comp_st::TEXT, ', ', comp_cty::TEXT) FROM testtable
+		)
+	UPDATE county_population_csv cpc
+		SET comps = subquery.concat
+		FROM (SELECT STRING_AGG(concat_list::text, '; ') FROM concat_list) AS subquery
+		WHERE trim(cpc.state) = 'Georgia'
+		AND cpc.county = 'Seminole County'
+		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
+	
+	
+ -- UPDATE pop TABLE est_base COLUMN WITH query constraints FROM est query
+	
+UPDATE county_population_csv cpc
+	SET est_base = '(10, 3, 5)'
+		WHERE trim(cpc.state) = 'Georgia'
+		AND cpc.county = 'Seminole County'
+		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
+		
+	
+ -- UPDATE pop TABLE land_value_estimate COLUMN WITH comps FROM est query
 
 UPDATE county_population_csv cpc
-	SET comps = concat(comp_st, ', ', comp_cty, '; ')
-	FROM testtable	
-	WHERE trim(cpc.state) = testtable.est_st
-	AND cpc.county = testtable.est_cty
-	AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
+	SET land_value_estimate = subquery.lv_avg::int
+	FROM (SELECT avg(comp_lv) AS lv_avg FROM testtable t WHERE t.est_st = 'Georgia' AND t.est_cty = 'Seminole County') AS subquery
+		WHERE trim(cpc.state) = 'Georgia'
+		AND cpc.county = 'Seminole County'
+		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
+		
+	
+ -- Checking population table for correct updates
+	
+SELECT * FROM county_population_csv cpc WHERE trim(cpc.state) = 'Georgia'
+		AND cpc.county = 'Seminole County'
+		AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';

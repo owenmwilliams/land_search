@@ -62,6 +62,9 @@ ALTER TABLE county_population_csv
 ALTER TABLE county_population_csv 
 	ADD COLUMN comps varchar(500);
 
+ALTER TABLE county_population_csv 
+	ALTER COLUMN comps TYPE varchar(5000);
+
 UPDATE county_population_csv cpc
 	SET land_value_estimate = land_value_asis_all::varchar
 	FROM county_landdata_csv clc

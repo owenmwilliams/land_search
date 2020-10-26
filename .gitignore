@@ -3,3 +3,5 @@
 *.txt
 *.json
 .DS_Store
+/venv
+kill*
