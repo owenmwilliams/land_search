@@ -1,20 +1,19 @@
 import psycopg2
 from datetime import datetime
 from psycopg2 import sql
-from fltr import county_return
-from est import cur
+from est.fltr import county_return
+from est.db.cur import con_cur
 import numpy as np
 
-temp1 = find_county()
-temp2 = np.array(temp1[0])
-county = temp2[0].strip()
-state = temp2[1].strip()
-print(county)
-print(state)
+def comp_find(a, b):
+    temp1 = county_return.find_county()
+    temp2 = np.array(temp1[0])
+    county = temp2[0].strip()
+    state = temp2[1].strip()
 
-cur = con_cur()
-cur.execute("""
-            SELECT comp_st, comp_cty FROM est_LandValue(10, 3, 5, %s, %s) 
-        """, (state, county))
-comp_states = cur.fetchall()
-print(comp_states)
+    cur = con_cur()
+    cur.execute("""
+                SELECT comp_st, comp_cty, comp_lv FROM est_LandValue(%s, %s, %s, %s) 
+            """, (a, b, state, county))
+    comp_states = cur.fetchall()
+    return(comp_states)

@@ -3,7 +3,7 @@
 -- DROP FUNCTION est_landvalue(numeric,numeric,integer);
  
 CREATE OR REPLACE FUNCTION est_LandValue (
-	x decimal, y decimal, z int, g varchar, h varchar
+	x decimal, y decimal, g varchar, h varchar
 	)
 --	RETURNS TABLE (
 --		est_state varchar(40), est_county varchar(100), est_dist decimal, est_count int, est_value decimal
@@ -44,12 +44,7 @@ CREATE OR REPLACE FUNCTION est_LandValue (
 				AND A.county = C.county 
 				AND C.yr = '2018'
 				WHERE C.land_value_asis_all IS NULL
---			),
---			interim_table AS (
---				SELECT est_st::varchar, est_cty::varchar, avg(dist)::decimal, count(comp_cty)::int AS comp_count, avg(comp_lv)::decimal AS comp_avg
---					FROM comp_select
---						GROUP BY est_st, est_cty
 			)
-			SELECT * FROM comp_select; -- WHERE comp_count > z;
+			SELECT * FROM comp_select;
 	END;
 	$$
