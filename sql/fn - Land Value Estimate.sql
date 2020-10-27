@@ -1,16 +1,13 @@
  -- SET up estimator AS a FUNCTION on distance, population range, and number of comps
 
--- DROP FUNCTION est_landvalue(numeric,numeric,integer);
+ -- DROP FUNCTION est_LandValue(NUMERIC, NUMERIC, varchar, varchar);
  
 CREATE OR REPLACE FUNCTION est_LandValue (
 	x decimal, y decimal, g varchar, h varchar
 	)
---	RETURNS TABLE (
---		est_state varchar(40), est_county varchar(100), est_dist decimal, est_count int, est_value decimal
---	)
 	RETURNS TABLE (
-		est_st varchar(40), est_cty varchar(100), est_lv int, est_pop int
-		, comp_st varchar(40), comp_cty varchar(100), comp_lv int, comp_pop int
+		est_st varchar(40), est_cty varchar(100)
+		, comp_st varchar(40), comp_cty varchar(100), comp_lv int, comp_perc decimal
 		, dist decimal
 	)	
 	LANGUAGE plpgsql
@@ -18,8 +15,8 @@ CREATE OR REPLACE FUNCTION est_LandValue (
 	BEGIN 
 		RETURN QUERY 
 			WITH comp_select AS (			
-			SELECT A.state AS est_st, A.county AS est_cty, C.land_value_asis_all::int AS est_lv, E.population AS est_pop, 
-				B.state AS comp_st, B.county AS comp_cty, D.land_value_asis_all::int AS comp_lv, F.population AS comp_pop,
+			SELECT A.state AS est_st, A.county AS est_cty,
+				B.state AS comp_st, B.county AS comp_cty, D.land_value_asis_all::int AS comp_lv, D.land_share_all::decimal AS comp_perc,
 				ST_Distance(A.geom, B.geom)::decimal AS dist
 			FROM county_latlong_csv AS A	
 			INNER JOIN county_latlong_csv AS B
