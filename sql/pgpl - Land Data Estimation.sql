@@ -63,7 +63,10 @@ ALTER TABLE county_population_csv
 	ADD COLUMN comps varchar(500);
 
 ALTER TABLE county_population_csv 
-	ALTER COLUMN comps TYPE varchar(50000);
+	ALTER COLUMN comps TYPE varchar(5000);
+
+ALTER TABLE county_population_csv 
+	ALTER COLUMN est_base TYPE varchar(50);
 
 UPDATE county_population_csv cpc
 	SET land_value_estimate = land_value_asis_all::varchar
@@ -73,6 +76,22 @@ UPDATE county_population_csv cpc
 	AND clc.yr = CAST(date_part('year', cpc.date_code) AS varchar)
 	AND clc.yr = '2018'
 	AND clc.land_value_asis_all IS NOT NULL;
+
+SELECT * FROM county_landdata_csv clc ;
+
+ALTER TABLE county_population_csv 
+	ADD COLUMN land_share_estimate varchar(30);
+
+UPDATE county_population_csv cpc
+	SET land_share_estimate = land_share_all::varchar
+	FROM county_landdata_csv clc
+	WHERE trim(cpc.state) = clc.state 
+	AND cpc.county = clc.county 
+	AND clc.yr = CAST(date_part('year', cpc.date_code) AS varchar)
+	AND clc.yr = '2018'
+	AND clc.land_share_all IS NOT NULL;
+
+SELECT * FROM county_population_csv cpc ;
 
 UPDATE county_population_csv 
 	SET est_base = 'base'

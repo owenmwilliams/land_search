@@ -1,0 +1,8 @@
+land_search is a service built to investigate and analyze locations on a county by county basis.
+
+Built from multiple data sources, this is a personal project to learn the following skillsets:
+ - Learning Postgres back-ends and databases
+ - Learning Python data manipulation using pandas
+ - Learning Python module structure and repeatable deployment
+ - Learning how to call APIs in code and develop a repeatable data pipeline structure
+ - Learning Python front ends GUI coding
