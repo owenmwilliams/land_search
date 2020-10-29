@@ -1,6 +1,6 @@
 /dat
 *.csv
-*.txt
+output.txt
 *.json
 .DS_Store
 /venv

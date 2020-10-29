@@ -1,10 +1,13 @@
-from est.calc.lst_loop import lst_loop
+from dtl.dtl_census import census_get
+from dtl.dtl_parks import parks_get
 from datetime import datetime
+from dtl.jprint import jprint
 
 StartWhile = datetime.now()
 print('*********************************', '\n')
 
-lst_loop(5)
+x = parks_get()
+jprint(x)
 
 EndWhile = datetime.now()
 print('*********************************', '\n', 'Time for calculation: ', EndWhile - StartWhile)
