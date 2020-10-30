@@ -1,22 +1,13 @@
-from dtl.dtl_census import census_get
-from dtl.dtl_parks import parks_get
-from dtl.dtl_loc import shp_get
+from dtl.wrt.pop_table import wrt_pop
 from datetime import datetime
-from dtl.jprint import jprint
-import pandas as pd
-import json
+from est.db.cur import con_cur
+import psycopg2
+from psycopg2 import sql
 
 StartWhile = datetime.now()
 print('*********************************', '\n')
 
-#x = parks_get()
-#print(x)
-
-#y = census_get()
-#print(y)
-
-z = shp_get()
-print(z)
+wrt_pop('new_table')
 
 EndWhile = datetime.now()
 print('*********************************', '\n', 'Time for calculation: ', EndWhile - StartWhile)
