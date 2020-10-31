@@ -4,7 +4,7 @@ import requests, json, pandas as pd
 
 def parks_get():
     endpoint = "https://developer.nps.gov/api/v1/parks"
-    HEADERS = {"X-Api-Key": "Y1YtARnlUdfs8BZ6B74c0jSgQ0M8dZ2uI6cplvsN"}
+    HEADERS = {"X-Api-Key": "<INSERT KEY HERE"}
     params = {"limit":"500"}
     response = requests.get(endpoint, params = params, headers=HEADERS)
     d = response.json()

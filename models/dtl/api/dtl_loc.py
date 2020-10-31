@@ -9,3 +9,4 @@ def shp_get():
     d = response.json()
     loc_data = pd.json_normalize(d['features'])
     return loc_data
+    
