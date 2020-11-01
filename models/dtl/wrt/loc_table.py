@@ -6,6 +6,8 @@ from io import StringIO
 import psycopg2
 from psycopg2 import sql
 
+### NEED TO COME BACK HERE TO FIGURE OUT HOW TO CONVERT ARCGIS RINGS INTO POSTGIS POLY
+
 def wrt_loc(a):
 
     y = shp_get()
