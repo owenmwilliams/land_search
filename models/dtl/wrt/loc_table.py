@@ -1,6 +1,5 @@
 from dtl.api.dtl_loc import shp_get
 from est.db.cur import con_cur
-import pandas as pd
 import json
 from io import StringIO
 import psycopg2
