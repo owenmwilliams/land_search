@@ -6,11 +6,11 @@ from dotenv import load_dotenv
 
 # Returns county population and demographics data from Census UPDATE to be dynamic search for latest
 
-def census_get():
+def census_get(st_fips):
     load_dotenv()
     gets = {"LASTUPDATE,DATE_CODE,NAME,POP,RACE,SEX,AGEGROUP,HISP"}
     fors = {"county:*"}
-    ins = {"state:02"}
+    ins = {"state:%s" % st_fips}
     params = {"get":gets, "for":fors, "in":ins, "key":os.getenv("CENSUS_KEY")}
     response = requests.get('https://api.census.gov/data/2019/pep/charagegroups', params=params)
     dat = response.json()

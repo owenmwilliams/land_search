@@ -38,18 +38,17 @@ def wrt_pop(a):
     con.commit()
     cur.close()
 
-def app_pop(a):
+def app_pop(a, b):
     
-    y = census_get().drop([0])
+    y = census_get(b).drop([0])
     
     cur, con = con_cur()
 
     cur.execute(
             sql.SQL("""SELECT count(*) from {}
             """).format(sql.Identifier(a)))
-    result = cur.fetchone()
-    
-### add the count to the id so it doesn't return pkey error
+    pos = cur.fetchone()
+    y.index = y.index+pos
 
     buffer = StringIO()
     y.to_csv(buffer, index_label='id', header=False, sep=';')

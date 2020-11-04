@@ -10,8 +10,12 @@ import os
 StartWhile = datetime.now()
 print('*********************************', '\n')
 
+# Appending works for smaller states
+# Get ChunkedEncodingError from IncompleteRead and Connection broken with larger states (e.g., doesn't work for "04" - Arizona)
+# Potential to stream with requests?
+
 # wrt_pop("full_census")
-app_pop("full_census")
+app_pop("full_census","30")
 
 EndWhile = datetime.now()
 print('*********************************', '\n', 'Time for calculation: ', EndWhile - StartWhile)
