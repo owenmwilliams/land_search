@@ -19,8 +19,14 @@ def wrt_pop(a):
         cur.execute(
             sql.SQL("""CREATE TABLE {} (
                 pkey serial PRIMARY KEY,
-                name varchar(80) UNIQUE NOT NULL,
+                updated date,
+                date_code int,
+                name varchar(80),
                 pop varchar(20),
+                race int,
+                sex int,
+                age_group int,
+                hisp int,
                 state varchar(20),
                 county varchar(20))
             """).format(sql.Identifier(a)))
@@ -31,4 +37,29 @@ def wrt_pop(a):
             cur.close()
     con.commit()
     cur.close()
+
+def app_pop(a, b):
     
+    y = census_get(b).drop([0])
+    
+    cur, con = con_cur()
+
+    cur.execute(
+            sql.SQL("""SELECT count(*) from {}
+            """).format(sql.Identifier(a)))
+    pos = cur.fetchone()
+    y.index = y.index+pos
+
+    buffer = StringIO()
+    y.to_csv(buffer, index_label='id', header=False, sep=';')
+    buffer.seek(0)
+
+
+    try:
+        cur.copy_from(buffer, a, sep=";")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error: %s" % error)
+        con.rollback()
+        cur.close()
+    con.commit()
+    cur.close()

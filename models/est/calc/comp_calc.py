@@ -51,3 +51,4 @@ def calc(numb):
         for i in range(len(comp_cty)):
             shr.append(comp_cty[i][3])
         updates.update_shr(round(np.mean(shr), 3), subj_cty)
+        

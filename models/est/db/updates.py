@@ -52,3 +52,4 @@ def update_shr(b, a):
                 """, {'str':b, 'st':str(a[0][1].strip()), 'cty':str(a[0][0].strip())})
     con.commit()
     print('Database updated, check: ', str(a[0][0].strip()), ', ', str(a[0][1].strip()), 'on column land_share_estimate value: ', str(b), '\n')
+    

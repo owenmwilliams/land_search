@@ -20,3 +20,4 @@ def num_comps():
     
     data_frame = pd.DataFrame(array, columns = ['radius', 'population', 'comps'])
     return data_frame
+    
