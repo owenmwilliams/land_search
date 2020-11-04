@@ -1,4 +1,4 @@
-from dtl.api.dtl_census import census_get
+from dtl.api.dtl_census import census_get, st_fips_get
 from est.db.cur import con_cur
 import pandas as pd
 import json
@@ -6,9 +6,9 @@ from io import StringIO
 import psycopg2
 from psycopg2 import sql
 
-def wrt_pop(a):
+def wrt_pop(a, b):
 
-    y = census_get().drop([0])
+    y = census_get(b).drop([0])
 
     buffer = StringIO()
     y.to_csv(buffer, index_label='id', header=False, sep=';')
@@ -54,7 +54,6 @@ def app_pop(a, b):
     y.to_csv(buffer, index_label='id', header=False, sep=';')
     buffer.seek(0)
 
-
     try:
         cur.copy_from(buffer, a, sep=";")
     except (Exception, psycopg2.DatabaseError) as error:
@@ -63,3 +62,19 @@ def app_pop(a, b):
         cur.close()
     con.commit()
     cur.close()
+
+def census_loop(table_name):    
+    x = st_fips_get()
+    new_header = x.iloc[0]
+    x = x[1:]
+    x.columns = new_header
+    x.drop_duplicates(subset=['state'], inplace=True)
+    try:
+        y = x.iloc[1]
+        wrt_pop(table_name,y['state'])
+        print("Building new table for census data: ", table_name)
+    finally:
+        for i in range(len(x)-1):
+            y = x.iloc[i+1]
+            print(y)
+            app_pop(table_name,y['state'])        
