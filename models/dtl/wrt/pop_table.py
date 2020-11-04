@@ -37,4 +37,30 @@ def wrt_pop(a):
             cur.close()
     con.commit()
     cur.close()
+
+def app_pop(a):
     
+    y = census_get().drop([0])
+    
+    cur, con = con_cur()
+
+    cur.execute(
+            sql.SQL("""SELECT count(*) from {}
+            """).format(sql.Identifier(a)))
+    result = cur.fetchone()
+    
+### add the count to the id so it doesn't return pkey error
+
+    buffer = StringIO()
+    y.to_csv(buffer, index_label='id', header=False, sep=';')
+    buffer.seek(0)
+
+
+    try:
+        cur.copy_from(buffer, a, sep=";")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error: %s" % error)
+        con.rollback()
+        cur.close()
+    con.commit()
+    cur.close()
