@@ -1,6 +1,7 @@
 /dat
 *.csv
 *.txt
+!requirements.txt
 *.json
 .DS_Store
 /venv
