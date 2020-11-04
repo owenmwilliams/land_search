@@ -15,3 +15,4 @@ def census_get(st_fips):
     response = requests.get('https://api.census.gov/data/2019/pep/charagegroups', params=params)
     dat = response.json()
     return pd.read_json(json.dumps(dat))
+    

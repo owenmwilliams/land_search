@@ -17,3 +17,4 @@ def comp_find(est, a, b):
             """, (a, b, state, county))
     comp_states = cur.fetchall()
     return(comp_states)
+    

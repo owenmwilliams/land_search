@@ -14,3 +14,4 @@ def detect_outlier(data_1):
         if np.abs(z_score) > threshold:
             outliers.append(y)
     return outliers
+    

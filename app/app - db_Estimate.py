@@ -3,6 +3,8 @@ from datetime import datetime
 from psycopg2 import sql
 from operator import itemgetter
 
+## this is replaced by estimation module
+
 # timing start
 StartTime = datetime.now()
 
@@ -47,10 +49,5 @@ while break_out < 10:
                     AND cpc.county = %s
                     AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018';
             """ {comp_states[    query_state[1], query_state[0]}
-# set up loop to find the most accurate estimate (relaxing pop)
-
-# set up loop to find the most accurate estimate (relaxing comps)
-
 
 con.close
-    
