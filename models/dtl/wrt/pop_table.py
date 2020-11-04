@@ -19,8 +19,14 @@ def wrt_pop(a):
         cur.execute(
             sql.SQL("""CREATE TABLE {} (
                 pkey serial PRIMARY KEY,
-                name varchar(80) UNIQUE NOT NULL,
+                updated date,
+                date_code int,
+                name varchar(80),
                 pop varchar(20),
+                race int,
+                sex int,
+                age_group int,
+                hisp int,
                 state varchar(20),
                 county varchar(20))
             """).format(sql.Identifier(a)))
