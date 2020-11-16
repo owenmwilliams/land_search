@@ -1,4 +1,3 @@
-import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import countDistinct, max
 from datetime import datetime
