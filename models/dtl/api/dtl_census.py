@@ -15,4 +15,13 @@ def census_get(st_fips):
     response = requests.get('https://api.census.gov/data/2019/pep/charagegroups', params=params)
     dat = response.json()
     return pd.read_json(json.dumps(dat))
-    
+
+def st_fips_get():
+    load_dotenv()
+    gets = {"NAME"}
+    fors = {"county:*"}
+    ins = {"state:*"}
+    params = {"get":gets, "for":fors, "in":ins, "key":os.getenv("CENSUS_KEY")}
+    response = requests.get('https://api.census.gov/data/2019/pep/charagegroups', params=params)
+    dat = response.json()
+    return pd.read_json(json.dumps(dat))
