@@ -3,9 +3,9 @@ from datetime import datetime
 from psycopg2 import sql
 from est.db.cur import con_cur
 
-# returning a single county without an existing land value estimate
+# returning a single county WITHOUT an existing land value estimate
 def find_county():
-    cur = con_cur()
+    cur, con = con_cur()
     cur.execute("""
             SELECT county, state
             FROM county_population_csv cpc 
@@ -16,5 +16,17 @@ def find_county():
             LIMIT 1;
         """)
     cty_test = cur.fetchall()
+    con.close()
     return cty_test
-    
+
+def random_county():
+    cur, con = con_cur()
+    cur.execute("""
+            SELECT trim(county), trim(state), RIGHT(geo_id, 5)
+            FROM county_population_csv
+            TABLESAMPLE BERNOULLI(.01)
+            LIMIT 1;
+        """)
+    cty_test = cur.fetchall()
+    con.close()
+    return cty_test
