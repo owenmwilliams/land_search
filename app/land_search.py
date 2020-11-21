@@ -12,12 +12,6 @@
 #   --radius=<deg>  Radius to find comparable counties in deg lat / long. [default: 2].
 #   --pop=<perc>    Population percent +/- on county being estimated. [default: 1].
 # """
-# from docopt import docopt
-
-# # if __name__ == '__main__':
-# #     arguments = docopt(__doc__, version='land_search v0.1')
-# #     print(arguments)
-
 
 """
 This example uses docopt with the built in cmd module to demonstrate an
@@ -25,20 +19,22 @@ interactive command application.
 Usage:
     land_search find_lucky
     land_search find_state <state>...
+    land_search estimate (params | comps) (<cty_fips>...) [--radius=<deg> --pop=<percent> | --comps=<number>]
     land_search test <arguments>...
     land_search (-i | --interactive)
-    land_search (-h | --help | --version)
+    land_search (-h | --help)
+    land_search (-v | --version)
 Options:
     -i, --interactive  Interactive Mode
-    -h, --help  Show this screen and exit.
-    --baud=<n>  Baudrate [default: 9600]
+    -h, --help         Show this screen and exit
+    -v, --version      Show version
 """
 
 import sys
 import cmd
 from docopt import docopt, DocoptExit
 import main
-
+import pandas as pd
 
 def docopt_cmd(func):
     """
@@ -47,7 +43,7 @@ def docopt_cmd(func):
     """
     def fn(self, arg):
         try:
-            opt = docopt(fn.__doc__, arg)
+            opt = docopt(fn.__doc__, arg, version='v0.1')
 
         except DocoptExit as e:
             # The DocoptExit is thrown when the args do not match.
@@ -74,8 +70,10 @@ def docopt_cmd(func):
 class MyInteractive (cmd.Cmd):
     intro = 'Welcome to my interactive program!' \
         + ' (type help for a list of commands.)'
-    prompt = '(my_program) '
+    prompt = '(land_search) '
     file = None
+
+    pd.set_option('display.max_rows', None)
 
     @docopt_cmd
     def do_find_lucky(self, arg):
@@ -84,10 +82,22 @@ class MyInteractive (cmd.Cmd):
 
     @docopt_cmd
     def do_find_state(self, arg):
-        """Usage: find_state <state>..."""
+        """Usage: find_state <state>..."""      
         for _ in range(len(arg['<state>'])):
             state = arg['<state>'][_]
-            main.find_state(state)
+            array = main.find_state(state)
+            if len(array) > 0:
+                print('*********************************************************')
+                print(array)
+            else:
+                try:
+                    state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
+                    array = main.find_state(state)
+                    if len(array) > 0:
+                        print('*********************************************************')
+                        print(array)
+                except:
+                    break
 
     @docopt_cmd
     def do_test(self, arg):
@@ -101,7 +111,7 @@ class MyInteractive (cmd.Cmd):
         print('Good Bye!')
         exit()
 
-opt = docopt(__doc__, sys.argv[1:])
+opt = docopt(__doc__, sys.argv[1:], version='v0.1')
 
 if opt['--interactive']:
     MyInteractive().cmdloop()
