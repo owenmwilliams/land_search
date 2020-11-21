@@ -23,9 +23,9 @@
 This example uses docopt with the built in cmd module to demonstrate an
 interactive command application.
 Usage:
-    land_search tcp <host> <port> [--timeout=<seconds>]
-    land_search lucky
-    land_search serial <port> [--baud=<n>] [--timeout=<seconds>]
+    land_search find_lucky
+    land_search find_state <state>...
+    land_search test <arguments>...
     land_search (-i | --interactive)
     land_search (-h | --help | --version)
 Options:
@@ -78,24 +78,22 @@ class MyInteractive (cmd.Cmd):
     file = None
 
     @docopt_cmd
-    def do_tcp(self, arg):
-        """Usage: tcp <host> <port> [--timeout=<seconds>]"""
-
-        print(arg)
-
-    @docopt_cmd
-    def do_lucky(self, arg):
-        """Usage: lucky"""
-        main.lucky()
+    def do_find_lucky(self, arg):
+        """Usage: find_lucky"""
+        main.find_lucky()
 
     @docopt_cmd
-    def do_serial(self, arg):
-        """Usage: serial <port> [--baud=<n>] [--timeout=<seconds>]
-Options:
-    --baud=<n>  Baudrate [default: 9600]
-        """
+    def do_find_state(self, arg):
+        """Usage: find_state <state>..."""
+        for _ in range(len(arg['<state>'])):
+            state = arg['<state>'][_]
+            main.find_state(state)
 
-        print(arg)
+    @docopt_cmd
+    def do_test(self, arg):
+        """Usage: test <arguments>..."""
+        for _ in range(len(arg['<arguments>'])):
+            print(arg['<arguments>'][_])
 
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""
