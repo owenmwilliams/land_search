@@ -20,6 +20,7 @@ def find_county():
     con.close()
     return cty_test
 
+# return a random county from county_population table
 def random_county():
     cur, con = con_cur()
     cur.execute("""
@@ -32,6 +33,7 @@ def random_county():
     con.close()
     return cty_test
 
+# return all counties within a specific state from county_population table
 def state_search(state):
     cur, con = con_cur()
     cur.execute("""
@@ -42,3 +44,18 @@ def state_search(state):
     cty_array = pd.DataFrame(cur.fetchall(), columns = ['County','State','FIPS'])
     con.close()
     return cty_array
+
+# return the county and state from a FIPS code
+def fips_2_county(FIPS):
+    cur, con = con_cur()
+    cur.execute("""
+            SELECT DISTINCT TRIM(county), TRIM(state)
+            FROM county_population_csv
+            WHERE RIGHT(geo_id, 5) = LPAD(%s::VARCHAR, 5, '0')
+            LIMIT 1;
+        """ % FIPS)
+    array = pd.DataFrame(cur.fetchall(), columns = ['County', 'State'])
+    county = array['County'][0]
+    state = array['State'][0]
+    con.close()
+    return county, state

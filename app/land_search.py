@@ -19,7 +19,7 @@ interactive command application.
 Usage:
     land_search find_lucky
     land_search find_state <state>...
-    land_search estimate (params | comps) (<cty_fips>...) [--radius=<deg> --pop=<percent> | --comps=<number>]
+    land_search estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) (<cty_fips>...)
     land_search test <arguments>...
     land_search (-i | --interactive)
     land_search (-h | --help)
@@ -28,6 +28,9 @@ Options:
     -i, --interactive  Interactive Mode
     -h, --help         Show this screen and exit
     -v, --version      Show version
+    --radius=<deg>     Radius to search within for comparable counties in deg lat / long [default: 2]
+    --pop=<percent>    Population percent +/- on county being estimated [default: 1]
+    --comps=<number>   Number of comps requested for a given county estimation [default: 5]
 """
 
 import sys
@@ -78,7 +81,9 @@ class MyInteractive (cmd.Cmd):
     @docopt_cmd
     def do_find_lucky(self, arg):
         """Usage: find_lucky"""
-        main.find_lucky()
+        county = main.find_lucky()
+        print('*********************************************************')
+        print(county)
 
     @docopt_cmd
     def do_find_state(self, arg):
@@ -98,6 +103,21 @@ class MyInteractive (cmd.Cmd):
                         print(array)
                 except:
                     break
+
+    @docopt_cmd
+    def do_estimate(self, arg):
+        """Usage: estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) (<cty_fips>)...
+
+            Options:
+            --radius=<deg>     Radius to search within for comparable counties in deg lat / long. [default: 2]
+            --pop=<percent>    Population percent +/- on county being estimated. [default: 1]
+            --comps=<number>   Number of comps requested for a given county estimation. [default: 5]
+        """
+        if arg['params'] is True:
+            for _ in range(len(arg['<cty_fips>'])):
+                main.params_estimate(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
+        elif arg['comps'] is True:
+            print(arg)
 
     @docopt_cmd
     def do_test(self, arg):
