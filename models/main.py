@@ -1,5 +1,6 @@
 import est.fltr.county_return as county_return
 import est.fltr.comps as comps
+import est.calc.constr as constr
 from datetime import datetime
 import pandas as pd
 import os
@@ -22,6 +23,14 @@ def params_estimate(population, radius, cty_fips):
     print('*********************************************************')
     print(comparables)
 
-
+def comps_estimate(comp_number, cty_fips):
+    print('*********************************************************')
+    county, state = county_return.fips_2_county(cty_fips)
+    print(county)
+    print(state)
+    comparables, radius, population, comps = constr.constr_itr(state, county, comp_number)
+    print('*********************************************************')
+    print(comps, 'comparable counties within ', radius, 'degrees lat / long and +/-', population, 'population.')
+    print(comparables)
 
 # # census_loop("census_table")

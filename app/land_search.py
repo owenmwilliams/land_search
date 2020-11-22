@@ -117,7 +117,8 @@ class MyInteractive (cmd.Cmd):
             for _ in range(len(arg['<cty_fips>'])):
                 main.params_estimate(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
         elif arg['comps'] is True:
-            print(arg)
+            for _ in range(len(arg['<cty_fips>'])):
+                main.comps_estimate(arg['--comps'], arg['<cty_fips>'][_])
 
     @docopt_cmd
     def do_test(self, arg):
