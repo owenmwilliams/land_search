@@ -28,7 +28,7 @@
     - spark_hadoop_conf: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop"
   roles:
     - hadoop
-    # - spark
+    - spark
 
 # - hosts: postgresql
   # become: yes

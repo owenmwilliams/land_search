@@ -28,3 +28,10 @@
   with_items: "{{ play_hosts|map('extract', hostvars, 'created_user')|list }}"
   tags:
     - hadoop
+
+- name: "[HADOOP] Add MBP key as authorized in all hosts"
+  authorized_key:
+    user: "{{ hadoop_user }}"
+    key: "{{ lookup('file', '/Users/owenwilliams/.ssh/id_rsa.pub') }}"
+  tags:
+    - hadoop

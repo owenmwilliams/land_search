@@ -1,6 +1,14 @@
 ---
 # tasks for Spark config steps
 
+- name: "[SPARK] Ensure ~/.bashrc for {{ hadoop_user }} exports SPARKHOME"
+  lineinfile:
+    path: "/home/{{ hadoop_user }}/.bashrc"
+    line: "{{ item }}"
+  with_items:
+    - "export SPARK_HOME=/opt/spark-3.0.1-bin-hadoop2.7"
+    - "export PATH=$PATH:$SPARK_HOME/bin"
+    
 - name: "[SPARK] Set Spark configuration files"
   template:
     src: "{{ item }}.j2"
