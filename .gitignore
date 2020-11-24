@@ -7,6 +7,7 @@
 /venv*
 kill*
 /jars
+*/inventory*
 
 # Python.gitignore from github/gitignore
 # Byte-compiled / optimized / DLL files
