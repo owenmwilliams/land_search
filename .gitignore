@@ -1,10 +1,10 @@
 /dat
 *.csv
 *.txt
-!requirements.txt
+!req*.txt
 *.json
 .DS_Store
-/venv
+/venv*
 kill*
 /jars
 

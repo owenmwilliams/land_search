@@ -1,0 +1,72 @@
+---
+# tasks file for postgresql
+
+# Install PostgreSQL
+- name: "[POSTGRESQL] Install PostgreSQL (Debian based)"
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - postgresql
+    - python-psycopg2
+  when: ansible_os_family == "Debian"
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Install PostgreSQL (Suse based)"
+  zypper:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - postgresql
+  - python-psycopg2
+  when: ansible_os_family == "Suse"
+  tags:
+    - postgresql
+    
+- name: "[POSTGRESQL] Configure pg_hba.conf PostgreSQL (Debian based)"
+  copy:
+    src: "pg_hba.conf"
+    dest: "/etc/postgresql/9.6/main/pg_hba.conf"
+    owner: postgres
+    group: postgres
+  when: ansible_os_family == "Debian"
+  notify:
+    - "[POSTGRESQL] Restart PostgreSQL"
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Configure pg_hba.conf PostgreSQL (Suse based)"
+  copy:
+    src: "pg_hba.conf"
+    dest: "/var/lib/pgsql/data/pg_hba.conf"
+    owner: postgres
+    group: postgres
+  when: ansible_os_family == "Suse"
+  notify:
+    - "[POSTGRESQL] Restart PostgreSQL"
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Configure postgresql.conf PostgreSQL (Debian based)"
+  lineinfile:
+    path: /etc/postgresql/9.6/main/postgresql.conf
+    regexp: '^listen_addresses ='
+    line: 'listen_addresses = *'   
+  when: ansible_os_family == "Debian"
+  notify:
+    - "[POSTGRESQL] Restart PostgreSQL"  
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Configure postgresql.conf PostgreSQL (Suse based)"
+  lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '^listen_addresses ='
+    line: "listen_addresses = '*'"
+  when: ansible_os_family == "Suse"  
+  notify:
+  - "[POSTGRESQL] Restart PostgreSQL"
+  tags:
+    - postgresql

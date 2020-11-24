@@ -1,0 +1,20 @@
+  pi0   ansible_host=pi0 ansible_user=ubuntu ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+  pi1   ansible_host=pi1 ansible_user=ubuntu ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+  pi2   ansible_host=pi2 ansible_user=ubuntu ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+  pi3   ansible_host=pi3 ansible_user=ubuntu ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+  [masters:vars]
+  hadoop_is_namenode=true
+  hadoop_is_resourcemanager=true
+
+  [masters]
+  pi0
+
+  [workers:vars]
+  hadoop_is_datanode=true
+  hadoop_is_nodemanager=true
+
+  [workers]
+  pi1
+  pi2
+  pi3

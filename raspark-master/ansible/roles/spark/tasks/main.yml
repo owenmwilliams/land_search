@@ -1,0 +1,12 @@
+---
+# tasks file for spark
+
+- import_tasks: install.yml
+
+- import_tasks: config.yml
+
+- import_tasks: master.yml
+  when: spark_standalone_cluster and spark_is_master
+
+- import_tasks: worker.yml
+  when: spark_standalone_cluster and spark_is_worker

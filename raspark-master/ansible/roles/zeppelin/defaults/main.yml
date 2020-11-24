@@ -1,0 +1,9 @@
+---
+# defaults file for zeppelin
+
+zeppelin_version: 0.7.3
+zeppelin_user: hduser
+zeppelin_group: hadoop
+zeppelin_spark_home: /opt/spark
+zeppelin_hadoop_home: /opt/hadoop
+apache_dist_server: http://www-eu.apache.org/dist

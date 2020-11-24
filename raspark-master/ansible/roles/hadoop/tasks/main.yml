@@ -1,0 +1,23 @@
+---
+# tasks file for hadoop
+
+- import_tasks: common.yml
+
+- import_tasks: install.yml
+
+- import_tasks: config.yml
+
+- import_tasks: namenode.yml
+  when: hadoop_is_namenode
+
+- import_tasks: datanode.yml
+  when: hadoop_is_datanode
+
+- import_tasks: resourcemanager.yml
+  when: hadoop_is_resourcemanager
+
+- import_tasks: nodemanager.yml
+  when: hadoop_is_nodemanager
+
+- import_tasks: format-dfs.yml
+  when: hadoop_is_namenode

@@ -1,0 +1,8 @@
+---
+
+- name: "[POSTGRESQL] Restart PostgreSQL"
+  service:
+    name: postgresql
+    state: restarted
+  tags:
+    - postgresql

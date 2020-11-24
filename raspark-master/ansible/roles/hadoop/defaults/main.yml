@@ -1,0 +1,14 @@
+---
+# defaults file for hadoop
+
+hadoop_version: 3.3.0
+hadoop_user: hduser
+hadoop_group: hadoop
+hadoop_namenode: pi0
+hadoop_resourcemanager: pi0
+hadoop_nodemanager_port: 8040
+hadoop_is_namenode: false
+hadoop_is_datanode: false
+hadoop_is_resourcemanager: false
+hadoop_is_nodemanager: false
+apache_dist_server: https://apache.osuosl.org

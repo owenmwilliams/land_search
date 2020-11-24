@@ -1,0 +1,5 @@
+{% if spark_standalone_cluster %}
+spark.master spark://{{ spark_master }}:7077
+{% else %}
+spark.master yarn
+{% endif %}

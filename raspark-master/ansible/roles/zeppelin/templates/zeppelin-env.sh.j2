@@ -1,0 +1,6 @@
+# set java_home
+export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+# set spark home dir
+export SPARK_HOME={{ zeppelin_spark_home }}
+# set hadoop conf dir
+export HADOOP_CONF_DIR={{ zeppelin_hadoop_home }}

@@ -1,0 +1,46 @@
+---
+# tasks file for hadoop configuration tasks
+
+- name: "[HADOOP] Ensure ~/.bashrc for {{ hadoop_user }} is properly set"
+  lineinfile:
+    path: "/home/{{ hadoop_user }}/.bashrc"
+    line: "{{ item }}"
+  with_items:
+    - "export JAVA_HOME=$(readlink -f /usr/bin/java | sed \"s:bin/java::\")"
+    - "export HADOOP_HOME=/opt/hadoop-{{ hadoop_version }}"
+    - "export HADOOP_MAPRED_HOME=$HADOOP_HOME"
+    - "export HADOOP_COMMON_HOME=$HADOOP_HOME"
+    - "export HADOOP_HDFS_HOME=$HADOOP_HOME"
+    - "export YARN_HOME=$HADOOP_HOME"
+    - "export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop"
+    - "export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop"
+    - "export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbi"
+  tags:
+    -hadoop
+
+- name: "[HADOOP] Set Hadoop configuration files"
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop/{{ item }}"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+  with_items:
+    - core-site.xml
+    - hdfs-site.xml
+    - yarn-site.xml
+    - mapred-site.xml
+  notify:
+    - "[HADOOP] Restart HDFS Namenode"
+    - "[HADOOP] Restart HDFS Datanode"
+    - "[HADOOP] Restart YARN ResourceManager"
+    - "[HADOOP] Restart YARN NodeManager"
+  tags:
+    -hadoop
+
+- name: "[HADOOP] Configure JAVA_HOME in hadoop-env.sh"
+  lineinfile:
+    path: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop/hadoop-env.sh"
+    line: "export JAVA_HOME=$(readlink -f /usr/bin/java | sed \"s:bin/java::\")"
+  tags:
+    -hadoop
+  

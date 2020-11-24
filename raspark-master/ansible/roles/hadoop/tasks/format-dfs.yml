@@ -1,0 +1,10 @@
+---
+
+- name: "[HADOOP] Format namenode"
+  command: "su -c './hdfs namenode -format' hduser"
+  args:
+    creates: "/hdfs/namenode/current/VERSION"
+    chdir: "/opt/hadoop-{{ hadoop_version }}/bin"
+  when: hadoop_is_namenode
+  tags:
+    -hadoop

@@ -1,0 +1,20 @@
+---
+# YARN ResourceManager related tasks
+
+- name: "[HADOOP] Set YARN ResourceManager unit file"
+  template:
+    src: "yarn-resource-manager.service.j2"
+    dest: /etc/systemd/system/yarn-resource-manager.service
+  notify:
+    - "[HADOOP] Resload systemd"
+    - "[HADOOP] Restart YARN ResourceManager"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Ensure YARN ResourceManager is started"
+  service:
+    name: yarn-resource-manager
+    state: started
+    enabled: true
+  tags:
+    -hadoop

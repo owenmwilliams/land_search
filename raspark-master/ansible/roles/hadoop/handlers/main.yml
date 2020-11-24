@@ -1,0 +1,41 @@
+---
+# handlers file for hadoop
+
+- name: "[HADOOP] Resload systemd"
+  command: "systemctl daemon-reload"
+
+- name: "[HADOOP] Restart HDFS Namenode"
+  service:
+    name: hdfs-namenode
+    state: restarted
+    enabled: true
+  when: hadoop_is_namenode
+  tags:
+    -hadoop
+
+- name: "[HADOOP] Restart HDFS Datanode"
+  service:
+    name: hdfs-datanode
+    state: restarted
+    enabled: true
+  when: hadoop_is_datanode
+  tags:
+    -hadoop
+
+- name: "[HADOOP] Restart YARN ResourceManager"
+  service:
+    name: yarn-resource-manager
+    state: restarted
+    enabled: true
+  when: hadoop_is_resourcemanager
+  tags:
+    -hadoop
+
+- name: "[HADOOP] Restart YARN NodeManager"
+  service:
+    name: yarn-node-manager
+    state: restarted
+    enabled: true
+  when: hadoop_is_nodemanager
+  tags:
+    -hadoop

@@ -1,0 +1,52 @@
+---
+# tasks file for hadoop install tasks
+
+- name: "[HADOOP] Install Java (Debian based)"
+  apt:
+    name: openjdk-8-jdk
+    state: latest
+  when: ansible_os_family == "Debian"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Install Java (Suse based)"
+  zypper:
+    name: java-1_8_0-openjdk
+    state: latest
+  when: ansible_os_family == "Suse"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Install yarn (Debian)"
+  apt:
+    name: cmdtest
+    state: latest
+  when: ansible_os_family == "Debian"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Download Hadoop {{ hadoop_version }}"
+  get_url:
+    url: "{{ apache_dist_server }}/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz"
+    dest: "./hadoop-{{ hadoop_version }}.tar.gz"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+    timeout: 3600
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Unpack Hadoop {{ hadoop_version }}"
+  command: "tar -xvzf hadoop-{{ hadoop_version }}.tar.gz -C /opt/"
+  args:
+    creates: "/opt/hadoop-{{ hadoop_version }}"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Set Hadoop permissions"
+  file:
+    path: "/opt/hadoop-{{ hadoop_version }}"
+    state: directory
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+  tags:
+    - hadoop
