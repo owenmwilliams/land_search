@@ -1,0 +1,5 @@
+---
+# defaults file for ssd mount
+
+mount_path: "/mnt/{{ fs_label }}"
+fs_label: "pi0_ssd"
