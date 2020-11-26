@@ -6,7 +6,7 @@ import pandas as pd
 
 # function to cycle through pop & dist variables and return number of comps
 def num_comps():
-    radius = 0
+    radius = 1
     population = 0.5
     array = np.array([[0, 0, 0]])
 
