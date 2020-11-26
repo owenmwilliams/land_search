@@ -2,10 +2,11 @@ import psycopg2
 from datetime import datetime
 from psycopg2 import sql
 from est.db.cur import con_cur
+import pandas as pd
 
-# returning a single county without an existing land value estimate
+# returning a single county WITHOUT an existing land value estimate
 def find_county():
-    cur = con_cur()
+    cur, con = con_cur()
     cur.execute("""
             SELECT county, state
             FROM county_population_csv cpc 
@@ -16,5 +17,45 @@ def find_county():
             LIMIT 1;
         """)
     cty_test = cur.fetchall()
+    con.close()
     return cty_test
-    
+
+# return a random county from county_population table
+def random_county():
+    cur, con = con_cur()
+    cur.execute("""
+            SELECT TRIM(county), TRIM(state), RIGHT(geo_id, 5)
+            FROM county_population_csv
+            TABLESAMPLE BERNOULLI(.01)
+            LIMIT 1;
+        """)
+    cty_test = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS'])
+    con.close()
+    return cty_test
+
+# return all counties within a specific state from county_population table
+def state_search(state):
+    cur, con = con_cur()
+    cur.execute("""
+            SELECT DISTINCT TRIM(county), TRIM(state), RIGHT(geo_id, 5)
+            FROM county_population_csv
+            WHERE TRIM(state) = '%s';
+        """ % state)
+    cty_array = pd.DataFrame(cur.fetchall(), columns = ['County','State','FIPS'])
+    con.close()
+    return cty_array
+
+# return the county and state from a FIPS code
+def fips_2_county(FIPS):
+    cur, con = con_cur()
+    cur.execute("""
+            SELECT DISTINCT TRIM(county), TRIM(state)
+            FROM county_population_csv
+            WHERE RIGHT(geo_id, 5) = LPAD(%s::VARCHAR, 5, '0')
+            LIMIT 1;
+        """ % FIPS)
+    array = pd.DataFrame(cur.fetchall(), columns = ['County', 'State'])
+    county = array['County'][0]
+    state = array['State'][0]
+    con.close()
+    return county, state
