@@ -4,46 +4,67 @@
 # Install PostgreSQL
 - name: "[POSTGRESQL] Install PostgreSQL (Debian based)"
   apt:
-    name: "{{ item }}"
+    name: postgresql
     state: latest
     update_cache: yes
-  with_items:
-    - postgresql
-    - python-psycopg2
   when: ansible_os_family == "Debian"
   tags:
     - postgresql
 
-- name: "[POSTGRESQL] Install PostgreSQL (Suse based)"
-  zypper:
-    name: "{{ item }}"
+# Install libpq-dev
+- name: "[POSTGRESQL] Install libpq"
+  apt:
+    name: libpq-dev
     state: latest
-  with_items:
-  - postgresql
-  - python-psycopg2
-  when: ansible_os_family == "Suse"
   tags:
     - postgresql
-    
+
+# Install acl
+- name: "[POSTGRESQL] Install acl"
+  apt:
+    name: acl
+    state: latest
+  tags:
+    - postgresql
+
+# Install psycopg2
+- name: "[POSTGRESQL] Install psycopg2"
+  pip:
+    name: psycopg2
+    state: latest
+  tags:
+    - postgresql
+
+- name: Ensure PostgreSQL data directory exists.
+  file:
+    path: "{{ postgresql_data_dir }}"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    state: directory
+    mode: 0700
+
+- name: Check if PostgreSQL database is initialized.
+  stat:
+    path: "{{ postgresql_data_dir }}/PG_VERSION"
+  register: pgdata_dir_version
+
+- name: Ensure PostgreSQL database is initialized.
+  command: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+  when: not pgdata_dir_version.stat.exists
+  become: true
+  become_user: "{{ postgresql_user }}"
+  vars:
+    ansible_ssh_pipelining: true
+  notify:
+    - "[POSTGRESQL] Start PostgreSQL"
+
 - name: "[POSTGRESQL] Configure pg_hba.conf PostgreSQL (Debian based)"
   copy:
     src: "pg_hba.conf"
-    dest: "/etc/postgresql/9.6/main/pg_hba.conf"
-    owner: postgres
-    group: postgres
+    dest: "{{ postgresql_data_dir }}/pg_hba.conf"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
   when: ansible_os_family == "Debian"
-  notify:
-    - "[POSTGRESQL] Restart PostgreSQL"
-  tags:
-    - postgresql
-
-- name: "[POSTGRESQL] Configure pg_hba.conf PostgreSQL (Suse based)"
-  copy:
-    src: "pg_hba.conf"
-    dest: "/var/lib/pgsql/data/pg_hba.conf"
-    owner: postgres
-    group: postgres
-  when: ansible_os_family == "Suse"
   notify:
     - "[POSTGRESQL] Restart PostgreSQL"
   tags:
@@ -51,22 +72,50 @@
 
 - name: "[POSTGRESQL] Configure postgresql.conf PostgreSQL (Debian based)"
   lineinfile:
-    path: /etc/postgresql/9.6/main/postgresql.conf
-    regexp: '^listen_addresses ='
-    line: 'listen_addresses = *'   
+    path: "{{ postgresql_data_dir }}/postgresql.conf"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"   
+  with_items:
+    - { regexp: '^listen_addresses =', line: "listen_addresses = '*'"}
+    - { regexp: '^data_directory =', line: "data_directory = '{{ postgresql_data_dir }}'"}
   when: ansible_os_family == "Debian"
   notify:
-    - "[POSTGRESQL] Restart PostgreSQL"  
+    - "[POSTGRESQL] Restart PostgreSQL"
   tags:
     - postgresql
 
-- name: "[POSTGRESQL] Configure postgresql.conf PostgreSQL (Suse based)"
+- name: "[POSTGRESQL] Ensure ~/.bashrc for hduser exports PGSQL_HOME"
   lineinfile:
-    path: /var/lib/pgsql/data/postgresql.conf
-    regexp: '^listen_addresses ='
-    line: "listen_addresses = '*'"
-  when: ansible_os_family == "Suse"  
-  notify:
-  - "[POSTGRESQL] Restart PostgreSQL"
-  tags:
-    - postgresql
+    path: "/home/hduser/.bashrc"
+    line: "{{ item }}"
+  with_items:
+    - "export PGSQL_HOME=/usr/lib/postgresql/12"
+    - "export PATH=$PATH:$PGSQL_HOME/bin"
+
+- name: "[POSTGRESQL] Add MBP key as authorized for postgres user"
+  authorized_key:
+    user: "{{ postgresql_user }}"
+    key: "{{ lookup('file', '/Users/owenwilliams/.ssh/id_rsa.pub') }}"
+
+- name: Ensure "land_search" tablespace directory exists.
+  file:
+    path: "{{ postgresql_data_dir }}/land_search"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    state: directory
+    mode: 0700
+
+- name: Create a new tablespace called land_search
+  become: true
+  become_user: postgres  
+  postgresql_tablespace:
+    name: land_search
+    owner: "{{ postgresql_user }}"
+    location: "{{ postgresql_data_dir }}/land_search"
+
+- name: Create a new database with name "land_search"
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: original_dump
+    tablespace: land_search

@@ -1,6 +1,8 @@
 ---
 # defaults file for postgresql
 
-postgresql_schema_name: raspark
-postgresql_user: datio
-postgresql_password: datiomola
+postgresql_user: postgres
+postgresql_group: postgres
+postgresql_data_dir: "/mnt/{{ fs_label }}/pgsql"
+fs_label: "pi0_ssd"
+postgresql_bin_path: "/usr/lib/postgresql/12/bin"

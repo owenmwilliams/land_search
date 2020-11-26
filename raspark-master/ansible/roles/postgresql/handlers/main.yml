@@ -6,3 +6,10 @@
     state: restarted
   tags:
     - postgresql
+
+- name: "[POSTGRESQL] Restart PostgreSQL"
+  service:
+    name: postgresql
+    state: started
+  tags:
+    - postgresql

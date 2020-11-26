@@ -30,17 +30,17 @@
 #     - hadoop
 #     - spark
 
-- hosts: ssd_mount
+# - hosts: ssd_mount
+#   become: yes
+#   become_user: root
+#   roles:
+#     - ssd
+
+- hosts: postgresql
   become: yes
   become_user: root
   roles:
-    - ssd
-
-# - hosts: postgresql
-  # become: yes
-  # become_user: root
-  # roles:
-  #   - postgresql
+    - postgresql
 
 # - hosts: zeppelin
 #   become: yes

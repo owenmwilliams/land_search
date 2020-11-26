@@ -17,7 +17,6 @@
   community.general.filesystem:
     fstype: ext4
     dev: /dev/sda2
-    force: yes
     opts: "-L {{ fs_label }}"
 
 - name: "[MOUNT] device by label"
