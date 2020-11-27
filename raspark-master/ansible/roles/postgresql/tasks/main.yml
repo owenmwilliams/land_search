@@ -43,21 +43,6 @@
     state: directory
     mode: 0700
 
-- name: Check if PostgreSQL database is initialized.
-  stat:
-    path: "{{ postgresql_data_dir }}/PG_VERSION"
-  register: pgdata_dir_version
-
-- name: Ensure PostgreSQL database is initialized.
-  command: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
-  when: not pgdata_dir_version.stat.exists
-  become: true
-  become_user: "{{ postgresql_user }}"
-  vars:
-    ansible_ssh_pipelining: true
-  notify:
-    - "[POSTGRESQL] Start PostgreSQL"
-
 - name: "[POSTGRESQL] Configure pg_hba.conf PostgreSQL (Debian based)"
   copy:
     src: "pg_hba.conf"
@@ -70,9 +55,35 @@
   tags:
     - postgresql
 
+- name: "[POSTGRESQL] Configure pg_hba.conf PostgreSQL (Debian based)"
+  copy:
+    src: "pg_hba.conf"
+    dest: /etc/postgresql/12/main/pg_hba.conf
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+  when: ansible_os_family == "Debian"
+  notify:
+    - "[POSTGRESQL] Restart PostgreSQL"
+  tags:
+    - postgresql
+
 - name: "[POSTGRESQL] Configure postgresql.conf PostgreSQL (Debian based)"
   lineinfile:
     path: "{{ postgresql_data_dir }}/postgresql.conf"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"   
+  with_items:
+    - { regexp: '^listen_addresses =', line: "listen_addresses = '*'"}
+    - { regexp: '^data_directory =', line: "data_directory = '{{ postgresql_data_dir }}'"}
+  when: ansible_os_family == "Debian"
+  notify:
+    - "[POSTGRESQL] Restart PostgreSQL"
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Configure postgresql.conf PostgreSQL (Debian based)"
+  lineinfile:
+    path: /etc/postgresql/12/main/postgresql.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"   
   with_items:
@@ -96,6 +107,26 @@
   authorized_key:
     user: "{{ postgresql_user }}"
     key: "{{ lookup('file', '/Users/owenwilliams/.ssh/id_rsa.pub') }}"
+
+- name: Check if PostgreSQL database is initialized.
+  stat:
+    path: "{{ postgresql_data_dir }}/PG_VERSION"
+  register: pgdata_dir_version
+
+- name: Ensure PostgreSQL database is initialized.
+  command: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+  when: not pgdata_dir_version.stat.exists
+  become: true
+  become_user: "{{ postgresql_user }}"
+  vars:
+    ansible_ssh_pipelining: true
+
+- name: "[POSTGRESQL] Start PostgreSQL"
+  service:
+    name: postgresql@12-main
+    state: started
+  tags:
+    - postgresql
 
 - name: Ensure "land_search" tablespace directory exists.
   file:

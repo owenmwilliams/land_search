@@ -2,14 +2,14 @@
 
 - name: "[POSTGRESQL] Restart PostgreSQL"
   service:
-    name: postgresql
+    name: postgresql@12-main
     state: restarted
   tags:
     - postgresql
 
-- name: "[POSTGRESQL] Restart PostgreSQL"
+- name: "[POSTGRESQL] Start PostgreSQL"
   service:
-    name: postgresql
+    name: postgresql@12-main
     state: started
   tags:
     - postgresql

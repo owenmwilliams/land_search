@@ -30,22 +30,34 @@
     - hadoop
     - spark
 
+- hosts: ssd_mount
+  become: yes
+  become_user: root
+  roles:
+    - ssd
+
 - hosts: postgresql
   become: yes
   become_user: root
   roles:
     - postgresql
 
-- hosts: zeppelin
+- hosts: ls_install
   become: yes
   become_user: root
-  vars:
-    - spark_master: "{{ groups['masters'][0] }}"
-    - hadoop_namenode: "{{ groups['masters'][0] }}"
-    - hadoop_resourcemanager: "{{ groups['masters'][0] }}"
-    - zeppelin_spark_home: "/opt/spark-{{ spark_version }}-bin-hadoop2.7"
-    - zeppelin_hadoop_home: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop"
-    - spark_hadoop_conf: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop"
   roles:
-    - zeppelin
+    - ls_install
+
+# - hosts: zeppelin
+#   become: yes
+#   become_user: root
+#   vars:
+#     - spark_master: "{{ groups['masters'][0] }}"
+#     - hadoop_namenode: "{{ groups['masters'][0] }}"
+#     - hadoop_resourcemanager: "{{ groups['masters'][0] }}"
+#     - zeppelin_spark_home: "/opt/spark-{{ spark_version }}-bin-hadoop2.7"
+#     - zeppelin_hadoop_home: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop"
+#     - spark_hadoop_conf: "/opt/hadoop-{{ hadoop_version }}/etc/hadoop"
+#   roles:
+#     - zeppelin
   
