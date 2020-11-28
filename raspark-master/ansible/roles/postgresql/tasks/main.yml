@@ -144,9 +144,37 @@
     owner: "{{ postgresql_user }}"
     location: "{{ postgresql_data_dir }}/land_search"
 
-- name: Create a new database with name "land_search"
+- name: Create a new database with name original_dump
   become: true
   become_user: postgres
   postgresql_db:
     name: original_dump
     tablespace: land_search
+
+- name: Install the package gnupg2
+  apt:
+    name: gnupg2
+    state: latest
+
+- name: Add an Apt signing key for postgres
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add specified repository into sources list
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ groovy-pgdg main
+    state: present
+
+- name: Install postgis
+  apt:
+    pkg:
+    - postgis
+    - postgresql-12-postgis-3
+
+- name: Adds postgis extension to the database original_dump
+  become: true
+  become_user: postgres
+  community.general.postgresql_ext:
+    name: postgis
+    db: original_dump

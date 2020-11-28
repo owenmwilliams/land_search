@@ -40,3 +40,9 @@
     group: "{{ spark_group }}"
   tags:
     - spark
+
+- name: "[SPARK] Add postgres driver jar to java bin"
+  get_url:
+    url: https://jdbc.postgresql.org/download/postgresql-42.2.18.jar
+    dest: /usr/lib/jvm/java-8-openjdk-arm64/jre/lib/ext
+    mode: '0777'

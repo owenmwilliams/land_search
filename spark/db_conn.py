@@ -13,7 +13,7 @@ spark = SparkSession \
 
 pgDF = spark.read.format("jdbc")\
     .option("driver", "org.postgresql.Driver")\
-    .option("url", "jdbc:postgresql://localhost:5434/owenwilliams")\
+    .option("url", "jdbc:postgresql://localhost:5437/owenwilliams")\
     .option("dbtable", "full_census")\
     .load()
 

@@ -42,11 +42,11 @@
   roles:
     - postgresql
 
-- hosts: ls_install
-  become: yes
-  become_user: root
-  roles:
-    - ls_install
+# - hosts: ls_install
+#   become: yes
+#   become_user: root
+#   roles:
+#     - ls_install
 
 # - hosts: zeppelin
 #   become: yes
