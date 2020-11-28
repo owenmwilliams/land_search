@@ -13,12 +13,24 @@ spark = SparkSession \
 
 pgDF = spark.read.format("jdbc")\
     .option("driver", "org.postgresql.Driver")\
-    .option("url", "jdbc:postgresql://pi0:5434/owenwilliams")\
+    .option("url", "jdbc:postgresql://pi0:5432/owenwilliams")\
     .option("dbtable", "county_population_csv")\
     .load()
 
 pgDF.select("state").distinct().show()
-pgDF.select(min("land_value_estimate")).show()
+pgDF.printSchema()
+
+min = pgDF.filter((pgDF.landvalueestimate != 'estimate') & (pgDF.landvalueestimate != 'Not enough comps.')).agg({"landvalueestimate": "min"}).collect()
+print(min)
+
+max = pgDF.filter((pgDF.landvalueestimate != 'estimate') & (pgDF.landvalueestimate != 'Not enough comps.')).agg({"landvalueestimate": "max"}).collect()
+print(max)
+
+min = pgDF.agg({"landshareestimate": "min"}).collect()
+print(min)
+
+max = pgDF.agg({"landshareestimate": "max"}).collect()
+print(max)
 
 EndWhile = datetime.now()
 print('*********************************', '\n', 'Time for calculation: ', EndWhile - StartWhile)
