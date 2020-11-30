@@ -1,4 +1,4 @@
-/dat
+*/dat
 *.csv
 *.txt
 !req*.txt
