@@ -1,0 +1,57 @@
+---
+# tasks file for land_search
+
+- name: "[LANDSEARCH] Ensure group {{ ls_group }} exists"
+  group:
+    name: "{{ ls_group }}"
+    state: present
+
+- name: "[LANDSEARCH] Add all users to primary {{ ls_group }} group"
+  user:
+    name: "{{ item }}"
+    group: "{{ ls_group }}"
+    state: present
+  with_items:
+    - "hduser"
+    - "ubuntu"
+    - "postgres"
+
+- name: "[LANDSEARCH] Add MBP key as authorized for {{ ls_user }} user"
+  authorized_key:
+    user: "{{ ls_user }}"
+    key: "{{ lookup('file', '/Users/owenwilliams/.ssh/id_rsa.pub') }}"
+
+- name: "[LANDSEARCH] Ensure land_search data directory exists"
+  file:
+    path: "{{ ls_data_dir }}"
+    owner: "{{ ls_user }}"
+    group: "{{ ls_group }}"
+    state: directory
+    mode: 0700
+
+- name: "[LANDSEARCH] Git checkout"
+  git:
+    repo: 'https://github.com/owenmwilliams/land_search'
+    dest: "{{ ls_data_dir }}"
+    version: latest
+
+- name: "[LANDSEARCH] Install libgdal-dev"
+  apt:
+    name: libgdal-dev
+    state: latest
+
+- name: "[LANDSEARCH] Ensure ~/.bashrc for {{ ls_user }} exports LSHOME"
+  lineinfile:
+    path: "/home/{{ ls_user }}/.bashrc"
+    line: "{{ item }}"
+  with_items:
+    - "export LSHOME={{ ls_data_dir }}"
+    - "export PATH=$PATH:$LSHOME"
+    - "export CPLUS_INCLUDE_PATH=/usr/include/gdal"
+    - "export C_INCLUDE_PATH=/usr/include/gdal"
+    - "export PATH=$PATH:$CPLUS_INCLUDE_PATH:$C_INCLUDE_PATH"
+
+- name: "[LANDSEARCH] Install specified python requirements"
+  pip:
+    requirements: "{{ ls_data_dir }}/requirements.txt"
+    

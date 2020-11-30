@@ -1,0 +1,68 @@
+---
+# tasks file for land_search
+
+- name: "[LANDSEARCH] Check if PostgreSQL database is initialized"
+  stat:
+    path: "{{ postgresql_data_dir }}/PG_VERSION"
+  register: pgdata_dir_version
+
+- name: "[LANDSEARCH] Ensure PostgreSQL database is initialized"
+  command: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+  when: not pgdata_dir_version.stat.exists
+  become: true
+  become_user: "{{ postgresql_user }}"
+  vars:
+    ansible_ssh_pipelining: true
+
+- name: "[LANDSEARCH] Start PostgreSQL"
+  service:
+    name: postgresql@12-main
+    state: started
+  tags:
+    - postgresql
+
+- name: "[LANDSEARCH] Ensure land_search tablespace directory exists"
+  file:
+    path: "{{ postgresql_data_dir }}/land_search"
+    owner: "{{ postgresql_user }}"
+    group: "{{ postgresql_group }}"
+    state: directory
+    mode: 0700
+
+- name: "[LANDSEARCH] Create a new tablespace called land_search"
+  become: true
+  become_user: postgres  
+  postgresql_tablespace:
+    name: land_search
+    owner: "{{ postgresql_user }}"
+    location: "{{ postgresql_data_dir }}/land_search"
+
+- name: "[LANDSEARCH] Create a new database with name {{ core_db }}"
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: "{{ core_db }}"
+    tablespace: land_search
+
+- name: "[LANDSEARCH] Adds postgis extension to the database {{ core_db }}"
+  become: true
+  become_user: postgres
+  postgresql_ext:
+    name: postgis
+    db: "{{ core_db }}"
+
+- name: "Upload core tables to {{ core_db }}"
+  become: true
+  become_user: postgres
+  postgresql_query:
+    db: "{{ core_db }}"
+    query: "{{ item }}"
+    positional_args:
+      - 1
+    encoding: UTF-8
+  with_items:
+    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-countydataset.sql') }}"
+    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-countylandvalue.sql') }}"
+    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-countylatlong.sql') }}"
+    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-placeairports.sql') }}"
+    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-placerecreation.sql') }}"
