@@ -16,7 +16,6 @@
     - hostname:
         name: "{{ inventory_hostname }}"
 
-
 - hosts: masters,workers
   become: yes
   become_user: root
