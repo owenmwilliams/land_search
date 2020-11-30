@@ -1,0 +1,20 @@
+---
+# YARN NodeManager related tasks
+
+- name: "[HADOOP] Set YARN NodeManager unit file"
+  template:
+    src: "yarn-node-manager.service.j2"
+    dest: /etc/systemd/system/yarn-node-manager.service
+  notify:
+    - "[HADOOP] Resload systemd"
+    - "[HADOOP] Restart YARN NodeManager"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Ensure YARN NodeManager is started"
+  service:
+    name: yarn-node-manager
+    state: started
+    enabled: true
+  tags:
+    -hadoop

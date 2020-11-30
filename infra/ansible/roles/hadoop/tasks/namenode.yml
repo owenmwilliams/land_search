@@ -1,0 +1,30 @@
+---
+# Hadoop Namenode related tasks
+
+- name: "[HADOOP] Set HDFS Namenode unit file"
+  template:
+    src: "hdfs-namenode.service.j2"
+    dest: /etc/systemd/system/hdfs-namenode.service
+  notify:
+    - "[HADOOP] Resload systemd"
+    - "[HADOOP] Restart HDFS Namenode"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Ensure HDFS Namenode folder is created"
+  file:
+    path: /hdfs/namenode
+    state: directory
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+    mode: 0750
+  tags:
+    -hadoop
+
+- name: "[HADOOP] Ensure HDFS Namenode is started"
+  service:
+    name: hdfs-namenode
+    state: started
+    enabled: true
+  tags:
+    -hadoop

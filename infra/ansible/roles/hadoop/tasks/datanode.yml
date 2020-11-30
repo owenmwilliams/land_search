@@ -1,0 +1,30 @@
+---
+# Hadoop Datanode related tasks
+
+- name: "[HADOOP] Set HDFS Datanode unit file"
+  template:
+    src: "hdfs-datanode.service.j2"
+    dest: /etc/systemd/system/hdfs-datanode.service
+  notify:
+    - "[HADOOP] Resload systemd"
+    - "[HADOOP] Restart HDFS Datanode"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Ensure HDFS Datanode folder is created"
+  file:
+    path: /hdfs/datanode
+    state: directory
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_group }}"
+    mode: 0700
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Ensure HDFS Datanode is started"
+  service:
+    name: hdfs-datanode
+    state: started
+    enabled: true
+  tags:
+    -hadoop

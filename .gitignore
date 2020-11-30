@@ -1,12 +1,13 @@
 /dat
 *.csv
 *.txt
-!requirements.txt
+!req*.txt
 *.json
 .DS_Store
-/venv
+/venv*
 kill*
 /jars
+*inventory*
 
 # Python.gitignore from github/gitignore
 # Byte-compiled / optimized / DLL files

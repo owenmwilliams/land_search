@@ -1,0 +1,30 @@
+---
+# Task file to mount a volume
+
+- name: "[MOUNT] Install or update pip"
+  apt:
+    name: python3-pip
+    state: latest
+
+- name: "[MOUNT] Install jmespath"
+  pip:
+    name: jmespath
+    state: latest
+  tags:
+    - ssd
+
+- name: "[MOUNT] Reformat as ext4 filesystem on /dev/sda2"
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/sda2
+    opts: "-L {{ fs_label }}"
+
+- name: "[MOUNT] device by label"
+  ansible.posix.mount:
+    path: "{{ mount_path }}"
+    src: "LABEL={{ fs_label }}"
+    fstype: ext4
+    opts: noatime
+    state: mounted
+  tags:
+    - ssd

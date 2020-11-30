@@ -1,0 +1,71 @@
+---
+# tasks file for zeppelin
+
+- name: "[ZEPPELIN] Install Java (Debian based)"
+  apt:
+    name: openjdk-8-jdk
+    state: latest
+  when: ansible_os_family == "Debian"
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Install Java (Suse based)"
+  zypper:
+    name: java-1_8_0-openjdk
+    state: latest
+  when: ansible_os_family == "Suse"
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Download Zeppelin {{ zeppelin_version }}"
+  get_url:
+    url: "{{ apache_dist_server }}/zeppelin/zeppelin-{{ zeppelin_version }}/zeppelin-{{ zeppelin_version }}-bin-all.tgz"
+    dest: "./zeppelin-{{ zeppelin_version }}-bin-all.tgz"
+    timeout: 3600
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Unpack Zeppelin {{ zeppelin_version }}"
+  command: "tar -xvzf zeppelin-{{ zeppelin_version }}-bin-all.tgz -C /opt/"
+  args:
+    creates: "/opt/zeppelin-{{ zeppelin_version }}-bin-all"
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Set Zeppelin permissions"
+  file:
+    path: "/opt/zeppelin-{{ zeppelin_version }}-bin-all"
+    state: directory
+    owner: "{{ zeppelin_user }}"
+    group: "{{ zeppelin_group }}"
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Set Zeppelin configuration files"
+  template:
+    src: "{{ item }}.j2"
+    dest: "/opt/zeppelin-{{ zeppelin_version }}-bin-all/conf/{{ item }}"
+  with_items:
+    - zeppelin-env.sh
+  notify:
+    - "[ZEPPELIN] Restart Zeppelin"
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Set Zeppelin service file"
+  template:
+    src: "zeppelin.service.j2"
+    dest: /etc/systemd/system/zeppelin.service
+  notify:
+    - "[ZEPPELIN] Resload systemd"
+    - "[ZEPPELIN] Restart Zeppelin"
+  tags:
+    - zeppelin
+
+- name: "[ZEPPELIN] Ensure Zeppelin is started"
+  service:
+    name: zeppelin
+    state: started
+    enabled: true
+  tags:
+    - zeppelin

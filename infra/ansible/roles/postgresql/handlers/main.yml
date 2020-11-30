@@ -1,0 +1,15 @@
+---
+
+- name: "[POSTGRESQL] Restart PostgreSQL"
+  service:
+    name: postgresql@12-main
+    state: restarted
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Start PostgreSQL"
+  service:
+    name: postgresql@12-main
+    state: started
+  tags:
+    - postgresql

@@ -1,0 +1,8 @@
+{% if spark_standalone_cluster %}
+SPARK_WORKER_MEMORY=650m
+SPARK_DAEMON_MEMORY=650m
+{% endif %}
+JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+HADOOP_CONF_DIR={{ spark_hadoop_conf }}
+export PYSPARK_PYTHON=/usr/bin/python3.8
+export PYSPARK_DRIVER_PYTHON=/usr/bin/python3.8

@@ -1,0 +1,11 @@
+---
+# defaults file for spark
+spark_version: 3.0.1
+spark_user: hduser
+spark_group: hadoop
+spark_standalone_cluster: false
+spark_master: pi0
+spark_is_master: false
+spark_is_worker: false
+spark_hadoop_conf: /opt/hadoop-{{ hadoop_version }}/etc/hadoop
+apache_dist_server: https://apache.osuosl.org

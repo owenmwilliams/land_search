@@ -1,0 +1,48 @@
+---
+# tasks file for spark
+
+- name: "[SPARK] Install Java (Debian based)"
+  apt:
+    name: openjdk-8-jdk
+    state: latest
+  when: ansible_os_family == "Debian"
+  tags:
+    - spark
+
+- name: "[SPARK] Install Java (Suse based)"
+  zypper:
+    name: java-1_8_0-openjdk
+    state: latest
+  when: ansible_os_family == "Suse"
+  tags:
+    - spark
+
+- name: "[SPARK] Download Spark {{ spark_version }}"
+  get_url:
+    url: "{{ apache_dist_server }}/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-hadoop2.7.tgz"
+    dest: "./spark-{{ spark_version }}-bin-hadoop2.7.tgz"
+    timeout: 3600
+  tags:
+    - spark
+
+- name: "[SPARK] Unpack Spark {{ spark_version }}"
+  command: "tar -xvzf spark-{{ spark_version }}-bin-hadoop2.7.tgz -C /opt/"
+  args:
+    creates: "/opt/spark-{{ spark_version }}-bin-hadoop2.7"
+  tags:
+    - spark
+
+- name: "[SPARK] Set Spark permissions"
+  file:
+    path: "/opt/spark-{{ spark_version }}-bin-hadoop2.7"
+    state: directory
+    owner: "{{ spark_user }}"
+    group: "{{ spark_group }}"
+  tags:
+    - spark
+
+- name: "[SPARK] Add postgres driver jar to java bin"
+  get_url:
+    url: https://jdbc.postgresql.org/download/postgresql-42.2.18.jar
+    dest: /usr/lib/jvm/java-8-openjdk-arm64/jre/lib/ext
+    mode: '0777'

@@ -1,0 +1,14 @@
+[Unit]
+Description=Apache Hadoop HDFS Namenode
+After=network.target
+
+[Service]
+Type=forking
+User={{ hadoop_user }}
+Group={{ hadoop_group }}
+ExecStart=/opt/hadoop-{{ hadoop_version }}/sbin/hadoop-daemon.sh start namenode
+ExecStop=/opt/hadoop-{{ hadoop_version }}/sbin/hadoop-daemon.sh stop namenode
+PIDFile=/tmp/hadoop-{{ hadoop_user }}-namenode.pid
+
+[Install]
+WantedBy=multi-user.target

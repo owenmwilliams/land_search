@@ -1,0 +1,37 @@
+---
+# tasks file for hadoop common tasks
+
+- name: "[HADOOP] Ensure group '{{ hadoop_group }}' is created"
+  group:
+    name: "{{ hadoop_group }}"
+    state: present
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Ensure user '{{ hadoop_user }}' is created"
+  user:
+    name: "{{ hadoop_user }}"
+    generate_ssh_key: yes
+    group: "{{ hadoop_group }}"
+    #groups: sudo
+    append: yes
+    shell: /bin/bash
+    state: present
+  register: created_user
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Add every {{ hadoop_user }} key as authorized in all hosts"
+  authorized_key:
+    user: "{{ hadoop_user }}"
+    key: "{{ item.ssh_public_key }}"
+  with_items: "{{ play_hosts|map('extract', hostvars, 'created_user')|list }}"
+  tags:
+    - hadoop
+
+- name: "[HADOOP] Add MBP key as authorized in all hosts"
+  authorized_key:
+    user: "{{ hadoop_user }}"
+    key: "{{ lookup('file', '/Users/owenwilliams/.ssh/id_rsa.pub') }}"
+  tags:
+    - hadoop

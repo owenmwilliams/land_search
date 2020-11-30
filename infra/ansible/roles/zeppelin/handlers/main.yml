@@ -1,0 +1,13 @@
+---
+# handlers file for zeppelin
+
+- name: "[ZEPPELIN] Resload systemd"
+  command: "systemctl daemon-reload"
+
+- name: "[ZEPPELIN] Restart Zeppelin"
+  service:
+    name: zeppelin
+    state: restarted
+    enabled: true
+  tags:
+    - zeppelin

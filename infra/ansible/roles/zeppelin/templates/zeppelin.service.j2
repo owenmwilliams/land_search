@@ -1,0 +1,11 @@
+[Unit]
+Description=Apache Zeppelin
+
+[Service]
+User=root
+ExecStart=/opt/zeppelin-{{ zeppelin_version }}-bin-all/bin/zeppelin-daemon.sh upstart
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

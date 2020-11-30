@@ -1,0 +1,14 @@
+[Unit]
+Description=Spark Worker
+Wants=network.target network-online.target
+After=network.target network-online.target
+
+[Service]
+Type=forking
+User={{ spark_user }}
+Group={{ spark_group }}
+ExecStart=/opt/spark-{{ spark_version }}-bin-hadoop2.7/sbin/start-slave.sh spark://{{ spark_master }}:7077
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

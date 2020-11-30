@@ -1,0 +1,23 @@
+---
+# handlers file for spark
+
+- name: "[SPARK] Resload systemd"
+  command: "systemctl daemon-reload"
+
+- name: "[SPARK] Restart Spark Master"
+  service:
+    name: spark-master
+    state: restarted
+    enabled: true
+  when: spark_standalone_cluster and spark_is_master
+  tags:
+    - spark
+
+- name: "[SPARK] Restart Spark Worker"
+  service:
+    name: spark-worker
+    state: restarted
+    enabled: true
+  when: spark_standalone_cluster and spark_is_worker
+  tags:
+    - spark

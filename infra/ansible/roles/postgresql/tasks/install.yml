@@ -1,0 +1,53 @@
+---
+# tasks file for postgresql
+
+- name: "[POSTGRESQL] Install PostgreSQL (Debian based)"
+  apt:
+    name: postgresql
+    state: latest
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Install libpq"
+  apt:
+    name: libpq-dev
+    state: latest
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Install acl"
+  apt:
+    name: acl
+    state: latest
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Install psycopg2"
+  pip:
+    name: psycopg2
+    state: latest
+  tags:
+    - postgresql
+
+- name: "[POSTGRESQL] Install the package gnupg2"
+  apt:
+    name: gnupg2
+    state: latest
+
+- name: "[POSTGRESQL] Add an Apt signing key for postgres"
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: "[POSTGRESQL] Add specified repository for postgis into sources list"
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ groovy-pgdg main
+    state: present
+
+- name: "[POSTGRESQL] Install postgis"
+  apt:
+    pkg:
+    - postgis
+    - postgresql-12-postgis-3

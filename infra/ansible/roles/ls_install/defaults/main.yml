@@ -1,0 +1,6 @@
+---
+# defaults file for postgresql
+
+ls_data_dir: "/opt/ls-cluster-v0.1"
+ls_user: ls_user
+ls_group: ls_group
