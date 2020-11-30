@@ -1,0 +1,2 @@
+/sql/dat/* filter=lfs diff=lfs merge=lfs -text
+/sql/dat/*.sql filter=lfs diff=lfs merge=lfs -text
