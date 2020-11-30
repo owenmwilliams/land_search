@@ -33,11 +33,11 @@
   git:
     repo: 'https://github.com/owenmwilliams/land_search'
     dest: "{{ ls_data_dir }}"
-    version: latest
+    version: v0.0.1
 
-- name: "[LANDSEARCH] Install libgdal-dev"
+- name: "[LANDSEARCH] Install libgdal-dev, libffi-dev"
   apt:
-    name: libgdal-dev
+    name: ['libgdal-dev', 'libffi-dev']
     state: latest
 
 - name: "[LANDSEARCH] Ensure ~/.bashrc for {{ ls_user }} exports LSHOME"
