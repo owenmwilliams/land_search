@@ -69,7 +69,6 @@ class MyInteractive (cmd.Cmd):
         """Usage: find_lucky"""
         county = sf.sf_lucky()
         print('*********************************************************')
-        # print(county)
 
     @docopt_cmd
     def do_find_state(self, arg):

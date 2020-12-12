@@ -67,15 +67,14 @@ def sf_state(state):
             print(line.rstrip())
         else: 
             try:
-                if line.strip()[0].isdigit():
+                if line.strip()[0:3].isdigit():
+                    if line.strip()[3:4].isspace():
+                        print(line.rstrip())               
+                elif line.strip()[0].isdigit():
                     if line.strip()[1:3].isspace():
                         print(line.rstrip())
             except IndexError:
                 pass
-        # elif line.strip().startswith('0  '):
-        #     print(line.rstrip()[0])
-        #     print(line.rstrip()[1:2])
-        
 
     stdout.close()
     stdin.close()

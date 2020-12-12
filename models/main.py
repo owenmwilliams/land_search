@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 import os
 
+pd.set_option('display.max_rows', None)
 
 def find_lucky():
     x = county_return.random_county()
