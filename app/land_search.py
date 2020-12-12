@@ -67,27 +67,23 @@ class MyInteractive (cmd.Cmd):
     @docopt_cmd
     def do_find_lucky(self, arg):
         """Usage: find_lucky"""
-        county = sf.sf_lucky()
-        print('*********************************************************')
+        sf.sf_lucky()
 
     @docopt_cmd
     def do_find_state(self, arg):
         """Usage: find_state <state>..."""      
         for _ in range(len(arg['<state>'])):
-            state = arg['<state>'][_]
-            array = main.find_state(state)
-            if len(array) > 0:
-                print('*********************************************************')
-                print(array)
+            try:
+                state = arg['<state>'][_]
+                sf.sf_state(state)
+            except:
+                pass
             else:
                 try:
                     state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
-                    array = main.find_state(state)
-                    if len(array) > 0:
-                        print('*********************************************************')
-                        print(array)
+                    sf.sf_state(state)
                 except:
-                    break
+                    pass
 
     @docopt_cmd
     def do_estimate(self, arg):

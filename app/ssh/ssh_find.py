@@ -38,6 +38,7 @@ def sf_lucky():
         elif line.strip().startswith('0  '):
             print(line.rstrip())
 
+    print('*********************************************************')
     stdout.close()
     stdin.close()
     client.close()
@@ -68,14 +69,17 @@ def sf_state(state):
         else: 
             try:
                 if line.strip()[0:3].isdigit():
-                    if line.strip()[3:4].isspace():
-                        print(line.rstrip())               
+                    if line.strip()[3:5].isspace():
+                        print(line.rstrip())
+                elif line.strip()[0:2].isdigit():
+                    if line.strip()[2:4].isspace():
+                        print(line.rstrip())
                 elif line.strip()[0].isdigit():
                     if line.strip()[1:3].isspace():
                         print(line.rstrip())
             except IndexError:
                 pass
-
+    print('*********************************************************')
     stdout.close()
     stdin.close()
     client.close()
