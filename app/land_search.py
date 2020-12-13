@@ -1,18 +1,3 @@
-# """land_search
-# Usage:
-#   land_search.py estimate_cty [--radius=<deg> --pop=<perc> | --comp_num=<num>] (<cty_fips>...)
-#   land_search.py refresh_data [<table_name>] (-spot | -full)
-#   land_search.py refresh_estimate (-spot | -full)
-#   land_search.py rank_cty <model_params> <cty_fips>...
-#   land_search.py fltr_cty <model_params>
-#   land_search.py cty_data <cty_fips>...
-# Options:
-#   -help           Show this screen.
-#   -version        Show version.
-#   --radius=<deg>  Radius to find comparable counties in deg lat / long. [default: 2].
-#   --pop=<perc>    Population percent +/- on county being estimated. [default: 1].
-# """
-
 """
 This example uses docopt with the built in cmd module to demonstrate an
 interactive command application.
@@ -36,6 +21,7 @@ Options:
 import sys
 import cmd
 from docopt import docopt, DocoptExit
+import ssh.ssh_find as sf
 import main
 import pandas as pd
 
@@ -46,7 +32,7 @@ def docopt_cmd(func):
     """
     def fn(self, arg):
         try:
-            opt = docopt(fn.__doc__, arg, version='v0.1')
+            opt = docopt(fn.__doc__, arg, version='v0.0.1')
 
         except DocoptExit as e:
             # The DocoptExit is thrown when the args do not match.
@@ -81,28 +67,23 @@ class MyInteractive (cmd.Cmd):
     @docopt_cmd
     def do_find_lucky(self, arg):
         """Usage: find_lucky"""
-        county = main.find_lucky()
-        print('*********************************************************')
-        print(county)
+        sf.sf_lucky()
 
     @docopt_cmd
     def do_find_state(self, arg):
         """Usage: find_state <state>..."""      
         for _ in range(len(arg['<state>'])):
-            state = arg['<state>'][_]
-            array = main.find_state(state)
-            if len(array) > 0:
-                print('*********************************************************')
-                print(array)
+            try:
+                state = arg['<state>'][_]
+                sf.sf_state(state)
+            except:
+                pass
             else:
                 try:
                     state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
-                    array = main.find_state(state)
-                    if len(array) > 0:
-                        print('*********************************************************')
-                        print(array)
+                    sf.sf_state(state)
                 except:
-                    break
+                    pass
 
     @docopt_cmd
     def do_estimate(self, arg):
@@ -132,7 +113,7 @@ class MyInteractive (cmd.Cmd):
         print('Good Bye!')
         exit()
 
-opt = docopt(__doc__, sys.argv[1:], version='v0.1')
+opt = docopt(__doc__, sys.argv[1:])
 
 if opt['--interactive']:
     MyInteractive().cmdloop()

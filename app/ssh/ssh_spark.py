@@ -20,7 +20,7 @@ stdout = channel.makefile('rb')
 
 stdin.write('''
 cd
-spark-submit --master yarn --deploy-mode cluster /opt/ls-cluster-v0.1/spark/db_conn.py
+spark-submit --master yarn --deploy-mode cluster /opt/ls-cluster-v0.0.1/spark/db_conn.py
 exit
 ''')
 print(stdout.read())
