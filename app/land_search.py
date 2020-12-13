@@ -100,7 +100,7 @@ class MyInteractive (cmd.Cmd):
                 se.se_est_params(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
         elif arg['comps'] is True:
             for _ in range(len(arg['<cty_fips>'])):
-                main.comps_estimate(arg['--comps'], arg['<cty_fips>'][_])
+                se.se_est_comps(arg['--comps'], arg['<cty_fips>'][_])
 
     @docopt_cmd
     def do_test(self, arg):
