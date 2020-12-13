@@ -23,6 +23,8 @@ def params_estimate(population, radius, cty_fips):
     comparables = comps.find_comps(state, county, radius, population)
     print('*********************************************************')
     print(comparables)
+    print(comparables['Land Value'].describe())
+    print(comparables['Perc Land Value'].astype('float64').describe())
 
 def comps_estimate(comp_number, cty_fips):
     print('*********************************************************')
@@ -33,5 +35,6 @@ def comps_estimate(comp_number, cty_fips):
     print('*********************************************************')
     print(comps, 'comparable counties within ', radius, 'degrees lat / long and +/-', population, 'population.')
     print(comparables)
+    print(comparables.describe())
 
 # # census_loop("census_table")

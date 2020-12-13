@@ -37,8 +37,9 @@ def sf_lucky():
             print(line.rstrip())
         elif line.strip().startswith('0  '):
             print(line.rstrip())
-
-    print('*********************************************************')
+    if True:
+        print('*********************************************************')
+    
     stdout.close()
     stdin.close()
     client.close()
