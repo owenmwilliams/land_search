@@ -33,7 +33,7 @@
   git:
     repo: 'https://github.com/owenmwilliams/land_search'
     dest: "{{ ls_data_dir }}"
-    version: v0.0.1
+    version: "{{ version }}"
 
 - name: "[LANDSEARCH] Install libgdal-dev, libffi-dev"
   apt:

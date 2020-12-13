@@ -2,6 +2,8 @@
 # defaults file for postgresql
 
 ls_data_dir: "/opt/ls-cluster-v0.0.1"
+version: "v0.0.1"
+core_db: v001
 ls_user: hduser
 ls_group: ls_group
 postgresql_data_dir: "/mnt/{{ fs_label }}/pgsql"
@@ -9,4 +11,3 @@ fs_label: "pi0_ssd"
 postgresql_bin_path: "/usr/lib/postgresql/12/bin"
 postgresql_user: postgres
 postgresql_group: postgres
-core_db: v001
