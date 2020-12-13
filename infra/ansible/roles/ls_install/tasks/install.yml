@@ -27,13 +27,13 @@
     owner: "{{ ls_user }}"
     group: "{{ ls_group }}"
     state: directory
-    mode: 0222
+    mode: 0777
 
-- name: "[LANDSEARCH] Git checkout"
-  git:
-    repo: 'https://github.com/owenmwilliams/land_search'
-    dest: "{{ ls_data_dir }}"
-    version: "{{ version }}"
+# - name: "[LANDSEARCH] Git checkout"
+#   git:
+#     repo: 'https://github.com/owenmwilliams/land_search'
+#     dest: "{{ ls_data_dir }}"
+#     version: "{{ version }}"
 
 - name: "[LANDSEARCH] Install libgdal-dev, libffi-dev"
   apt:

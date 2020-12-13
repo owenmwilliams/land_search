@@ -1,4 +1,5 @@
 import est.fltr.county_return as county_return
+import est.fltr.search as search
 import est.fltr.comps as comps
 import est.calc.constr as constr
 from datetime import datetime
@@ -48,6 +49,12 @@ def comps_estimate(comp_number, cty_fips):
     print('#####')
     print('*****')    
     print(comparables['Perc Land Value'].astype('float64').describe())
+    print('#####')
+
+def search_all(value, share, pop):
+    top20 = search.search_all(value, share, pop)
+    print('*****')
+    print(top20)
     print('#####')
 
 # # census_loop("census_table")
