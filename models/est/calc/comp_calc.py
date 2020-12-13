@@ -37,7 +37,7 @@ def calc(numb):
     else:
         cur, con = con_cur()
         cur.execute("""
-            UPDATE county_population_csv cpc
+            UPDATE countydataset cpc
                 SET land_value_estimate = 'Not enough comps.'
                     WHERE trim(cpc.state) = %(st)s
                     AND trim(cpc.county) = %(cty)s

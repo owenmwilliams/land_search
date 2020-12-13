@@ -1,10 +1,10 @@
 import psycopg2
+from est.db.cur import con_cur
 
 def update_constr(b, a):
-    con = psycopg2.connect(database='owenwilliams', host="localhost", port="5434")
-    cur = con.cursor()
+    cur, con = con_cur()
     cur.execute("""
-        UPDATE county_population_csv cpc
+        UPDATE countydataset cpc
             SET est_base = %(str)s
                 WHERE trim(cpc.state) = %(st)s
                 AND trim(cpc.county) = %(cty)s
@@ -15,10 +15,9 @@ def update_constr(b, a):
 
 
 def update_comps(b, a):
-    con = psycopg2.connect(database='owenwilliams', host="localhost", port="5434")
-    cur = con.cursor()
+    cur, con = con_cur()
     cur.execute("""
-        UPDATE county_population_csv cpc
+        UPDATE countydataset cpc
             SET comps = %(str)s
                 WHERE trim(cpc.state) = %(st)s
                 AND trim(cpc.county) = %(cty)s
@@ -28,10 +27,9 @@ def update_comps(b, a):
     print('Database updated, check: ', str(a[0][0].strip()), ', ', str(a[0][1].strip()), 'on column comps value: ', str(b), '\n')
 
 def update_lv(b, a):
-    con = psycopg2.connect(database='owenwilliams', host="localhost", port="5434")
-    cur = con.cursor()
+    cur, con = con_cur()
     cur.execute("""
-        UPDATE county_population_csv cpc
+        UPDATE countydataset cpc
             SET land_value_estimate = %(str)s
                 WHERE trim(cpc.state) = %(st)s
                 AND trim(cpc.county) = %(cty)s
@@ -41,10 +39,9 @@ def update_lv(b, a):
     print('Database updated, check: ', str(a[0][0].strip()), ', ', str(a[0][1].strip()), 'on column land_value_estimate value: ', str(b), '\n')
 
 def update_shr(b, a):
-    con = psycopg2.connect(database='owenwilliams', host="localhost", port="5434")
-    cur = con.cursor()
+    cur, con = con_cur()
     cur.execute("""
-        UPDATE county_population_csv cpc
+        UPDATE countydataset cpc
             SET land_share_estimate = %(str)s
                 WHERE trim(cpc.state) = %(st)s
                 AND trim(cpc.county) = %(cty)s
