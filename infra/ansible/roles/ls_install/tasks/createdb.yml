@@ -61,8 +61,13 @@
       - 1
     encoding: UTF-8
   with_items:
-    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-countydataset.sql') }}"
-    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-countylandvalue.sql') }}"
-    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-countylatlong.sql') }}"
-    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-placeairports.sql') }}"
-    - "{{ lookup('file', '/Users/owenwilliams/Projects/land_search/sql/dat/dat-placerecreation.sql') }}"
+    - "{{ ls_data_dir }}/sql/dat/dat-countydataset.sql"
+    - "{{ ls_data_dir }}/sql/dat/dat-countylandvalue.sql"
+    - "{{ ls_data_dir }}/sql/dat/dat-countylatlong.sql"
+    - "{{ ls_data_dir }}/sql/dat/dat-placeairports.sql"
+    - "{{ ls_data_dir }}/sql/dat/dat-placerecreation.sql"
+    - "{{ ls_data_dir }}/sql/fn-landvalueEstimate.sql"
+    - "{{ ls_data_dir }}/sql/fn-yearpopcostshareairLookup.sql"
+    - "{{ ls_data_dir }}/sql/fn-yearpopcostshareairparkLookup.sql"
+    - "{{ ls_data_dir }}/sql/fn-yearpopcostshareLookup.sql"
+    

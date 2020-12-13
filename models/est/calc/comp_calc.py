@@ -4,6 +4,7 @@ from est.plot import plotit
 import numpy as np
 from est.calc import outlier
 from est.db import updates
+from est.db.cur import con_cur
 import psycopg2
 
 
@@ -34,10 +35,9 @@ def calc(numb):
             lv.append(comp_cty[i][2])
         updates.update_lv(round(np.mean(lv)), subj_cty)
     else:
-        con = psycopg2.connect(database='owenwilliams', host="localhost", port="5434")
-        cur = con.cursor()
+        cur, con = con_cur()
         cur.execute("""
-            UPDATE county_population_csv cpc
+            UPDATE countydataset cpc
                 SET land_value_estimate = 'Not enough comps.'
                     WHERE trim(cpc.state) = %(st)s
                     AND trim(cpc.county) = %(cty)s
