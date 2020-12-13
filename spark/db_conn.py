@@ -2,12 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import countDistinct, max
 from datetime import datetime
 
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-version = os.getenv("version")
-db = version.replace('.','')
+db = "v002"
 
 StartWhile = datetime.now()
 print('*********************************', '\n')

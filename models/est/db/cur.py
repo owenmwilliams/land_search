@@ -1,10 +1,6 @@
 import psycopg2
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
-version = os.getenv("version")
-db = version.replace('.','')
+db = "v002"
 
 def con_cur():
     con = psycopg2.connect(database=db, host="localhost", port="5432")
