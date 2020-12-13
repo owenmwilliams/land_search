@@ -22,6 +22,7 @@ import sys
 import cmd
 from docopt import docopt, DocoptExit
 import ssh.ssh_find as sf
+import ssh.ssh_estimate as se
 import main
 import pandas as pd
 
@@ -96,10 +97,10 @@ class MyInteractive (cmd.Cmd):
         """
         if arg['params'] is True:
             for _ in range(len(arg['<cty_fips>'])):
-                main.params_estimate(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
+                se.se_est_params(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
         elif arg['comps'] is True:
             for _ in range(len(arg['<cty_fips>'])):
-                main.comps_estimate(arg['--comps'], arg['<cty_fips>'][_])
+                se.se_est_comps(arg['--comps'], arg['<cty_fips>'][_])
 
     @docopt_cmd
     def do_test(self, arg):
