@@ -5,7 +5,7 @@ def at_end(a):
     cur = con_cur()
     cur.execute("""
             SELECT *
-            FROM county_population_csv cpc 
+            FROM countydataset cpc 
                 WHERE land_value_estimate = 'estimate' 
                 AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018'
                 AND state IS NOT NULL

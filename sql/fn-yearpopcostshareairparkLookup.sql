@@ -9,16 +9,16 @@ CREATE OR REPLACE FUNCTION lookup_YrCostPopShareAirPark (
 		OPEN REF FOR 
 			WITH cte AS (
 				SELECT one.county, one.state, two.loc_id, two.commercial_ops, ST_Distance(one.geom, two.geom) as dist
-					FROM county_latlong_csv as one
-					CROSS JOIN major_airports_csv as two
+					FROM countylatlong as one
+					CROSS JOIN placeairports as two
 					WHERE ST_Distance(one.geom, two.geom) < e
 			), sort AS (
 				SELECT *, row_number() OVER (PARTITION BY state, county ORDER BY dist) as rn
 					FROM cte
 			), clp AS (
 				SELECT three.county, three.state, four.gnis_id, four.unit_name, four.lat, four.long, ST_Distance(three.geom, four.geom) AS dist 
-					FROM county_latlong_csv AS three
-					CROSS JOIN national_recreation_csv AS four
+					FROM countylatlong AS three
+					CROSS JOIN placerecreation AS four
 					WHERE ST_Distance(three.geom, four.geom) < f
 			), sortp AS (
 				SELECT distinct(county), count(*) AS num_parks, state
@@ -27,14 +27,14 @@ CREATE OR REPLACE FUNCTION lookup_YrCostPopShareAirPark (
 					GROUP BY county, state
 			)
 			SELECT clc.state, clc.county, sort.loc_id, sort.dist, sort.commercial_ops, sortp.num_parks, clc.land_value_asis_all, clc.land_share_all, cpc.population
-				FROM county_landdata_csv clc
+				FROM countylandvalue clc
 				JOIN sort
 					ON sort.county = clc.county 
 					AND sort.state = clc.state
 				JOIN sortp 
 					ON sortp.county = clc.county 
 					AND sortp.state = clc.state 
-				JOIN county_population_csv cpc
+				JOIN countydataset cpc
 					ON clc.county = cpc.county 
 					AND clc.yr = CAST(date_part('year', cpc.date_code) AS varchar)
 					AND clc.state = trim(cpc.state)

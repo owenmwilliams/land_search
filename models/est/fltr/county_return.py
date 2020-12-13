@@ -9,7 +9,7 @@ def find_county():
     cur, con = con_cur()
     cur.execute("""
             SELECT county, state
-            FROM county_population_csv cpc 
+            FROM countydataset cpc 
                 WHERE land_value_estimate = 'estimate' 
                 AND CAST(date_part('year', cpc.date_code) AS varchar) = '2018'
                 AND state IS NOT NULL
@@ -25,7 +25,7 @@ def random_county():
     cur, con = con_cur()
     cur.execute("""
             SELECT TRIM(county), TRIM(state), RIGHT(geo_id, 5)
-            FROM county_population_csv
+            FROM countydataset
             TABLESAMPLE BERNOULLI(.01)
             LIMIT 1;
         """)
@@ -38,7 +38,7 @@ def state_search(state):
     cur, con = con_cur()
     cur.execute("""
             SELECT DISTINCT TRIM(county), TRIM(state), RIGHT(geo_id, 5)
-            FROM county_population_csv
+            FROM countydataset
             WHERE TRIM(state) = '%s';
         """ % state)
     cty_array = pd.DataFrame(cur.fetchall(), columns = ['County','State','FIPS'])
@@ -50,7 +50,7 @@ def fips_2_county(FIPS):
     cur, con = con_cur()
     cur.execute("""
             SELECT DISTINCT TRIM(county), TRIM(state)
-            FROM county_population_csv
+            FROM countydataset
             WHERE RIGHT(geo_id, 5) = LPAD(%s::VARCHAR, 5, '0')
             LIMIT 1;
         """ % FIPS)

@@ -2,6 +2,13 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import countDistinct, max
 from datetime import datetime
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+version = os.getenv("version")
+db = version.replace('.','')
+
 StartWhile = datetime.now()
 print('*********************************', '\n')
 
@@ -13,8 +20,8 @@ spark = SparkSession \
 
 pgDF = spark.read.format("jdbc")\
     .option("driver", "org.postgresql.Driver")\
-    .option("url", "jdbc:postgresql://pi0:5432/owenwilliams")\
-    .option("dbtable", "county_population_csv")\
+    .option("url", "jdbc:postgresql://pi0:5432/%s" % db)\
+    .option("dbtable", "countydataset")\
     .load()
 
 pgDF.select("state").distinct().show()
