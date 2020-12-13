@@ -18,6 +18,6 @@ def search_all(value, share, population):
                 ORDER BY land_value_estimate ASC
                 LIMIT 20;
             """.format(int(value), float(share), int(population)))
-    search_counties = cur.fetchall()
+    search_counties = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'Population', 'Value', 'Share'])
     con.close()
     return(search_counties)
