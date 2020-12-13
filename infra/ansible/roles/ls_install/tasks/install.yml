@@ -27,7 +27,7 @@
     owner: "{{ ls_user }}"
     group: "{{ ls_group }}"
     state: directory
-    mode: 0700
+    mode: 0222
 
 - name: "[LANDSEARCH] Git checkout"
   git:

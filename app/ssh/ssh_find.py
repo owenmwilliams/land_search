@@ -9,9 +9,7 @@ remote_user = 'postgres'
 remote_host = 'pi0'
 remote_port = 22
 ssh_key = os.getenv("ssh_key")
-  
-
-
+version = os.getenv("version")
 
 def sf_lucky():
     client = paramiko.SSHClient()
@@ -23,11 +21,11 @@ def sf_lucky():
 
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')
-    stdin.write('''
-    cd /opt/ls-cluster-v0.0.1/models
+    stdin.write("""
+    cd /opt/ls-cluster-{0}/models
     python3 -c 'import main; x = main.find_lucky(); print(x)'
     exit
-    ''')
+    """.format(version))
 
     while True:
         line = stdout.readline()
@@ -54,10 +52,10 @@ def sf_state(state):
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')
     stdin.write("""
-    cd /opt/ls-cluster-v0.0.1/models
-    python3 -c 'import main; x = main.find_state("%s"); print(x)'
+    cd /opt/ls-cluster-{0}/models
+    python3 -c 'import main; x = main.find_state("{1}"); print(x)'
     exit
-    """ % state)
+    """.format(version, state))
 
     while True:
         line = stdout.readline()

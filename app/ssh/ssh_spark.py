@@ -8,6 +8,7 @@ remote_user = 'hduser'
 remote_host = 'pi0'
 remote_port = 22
 ssh_key = os.getenv("ssh_key")
+version = os.getenv("version")
   
 client = paramiko.SSHClient()
 client.load_system_host_keys()
@@ -18,11 +19,11 @@ channel = client.invoke_shell()
 stdin = channel.makefile('wb')
 stdout = channel.makefile('rb')
 
-stdin.write('''
+stdin.write("""
 cd
-spark-submit --master yarn --deploy-mode cluster /opt/ls-cluster-v0.0.1/spark/db_conn.py
+spark-submit --master yarn --deploy-mode cluster /opt/ls-cluster-{0}/spark/db_conn.py
 exit
-''')
+""".format(version))
 print(stdout.read())
 
 stdout.close()

@@ -9,7 +9,8 @@ remote_user = 'postgres'
 remote_host = 'pi0'
 remote_port = 22
 ssh_key = os.getenv("ssh_key")
-  
+version = os.getenv("version")
+
 def se_est_params(pop, rad, fips):
     client = paramiko.SSHClient()
     client.load_system_host_keys()
@@ -21,10 +22,10 @@ def se_est_params(pop, rad, fips):
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')
     stdin.write("""
-    cd /opt/ls-cluster-v0.0.1/models
-    python3 -c 'import main; x = main.params_estimate({0}, {1}, {2}); print(x)'
+    cd /opt/ls-cluster-{0}/models
+    python3 -c 'import main; x = main.params_estimate({1}, {2}, {3}); print(x)'
     exit
-    """.format(pop, rad, fips))
+    """.format(version, pop, rad, fips))
 
     while True:
         line = stdout.readline()
@@ -51,10 +52,10 @@ def se_est_comps(comps, fips):
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')
     stdin.write("""
-    cd /opt/ls-cluster-v0.0.1/models
-    python3 -c 'import main; x = main.comps_estimate({0}, {1}); print(x)'
+    cd /opt/ls-cluster-{0}/models
+    python3 -c 'import main; x = main.comps_estimate({1}, {2}); print(x)'
     exit
-    """.format(comps, fips))
+    """.format(version, comps, fips))
 
     while True:
         line = stdout.readline()
