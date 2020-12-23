@@ -7,6 +7,7 @@ import pandas as pd
 import os
 
 pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
 
 def find_lucky():
     x = county_return.random_county()
@@ -58,6 +59,12 @@ def comps_estimate(comp_number, cty_fips):
 
 def search_all(value, share, pop):
     top20 = search.search_all(value, share, pop)
+    print('*****')
+    print(top20)
+    print('#####')
+
+def search_complex(value, share, pop, air_prox, parks_prox, parks_num):
+    top20 = search.search_complex(value, share, pop, air_prox, parks_prox, parks_num)
     print('*****')
     print(top20)
     print('#####')
