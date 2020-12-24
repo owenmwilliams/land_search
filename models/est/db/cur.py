@@ -1,6 +1,6 @@
 import psycopg2
 
-db = "v002"
+db = "v003"
 
 def con_cur():
     con = psycopg2.connect(database=db, host="localhost", port="5432")
