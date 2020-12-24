@@ -39,8 +39,7 @@ def constr_itr(state, county, comp_number):
             else:
                 population = population+0.5
         elif radius >= 10 and population >= 10:
-            array = []
+            array = ['Not enough comps found.']
             break_out = 1
             print('Not enough comps found.')
             return array, round(radius,2), round(population,2), len(array)
-            

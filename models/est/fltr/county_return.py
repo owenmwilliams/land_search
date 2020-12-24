@@ -26,7 +26,7 @@ def random_county():
     cur.execute("""
             SELECT TRIM(county), TRIM(state), RIGHT(geo_id, 5)
             FROM countydataset
-            TABLESAMPLE BERNOULLI(.01)
+            TABLESAMPLE BERNOULLI(.1)
             LIMIT 1;
         """)
     cty_test = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS'])
