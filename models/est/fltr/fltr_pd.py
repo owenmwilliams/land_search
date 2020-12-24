@@ -49,7 +49,7 @@ def fltr_air(minimum, maximum, radius):
     cur, con = con_cur()
     cur.execute("""
         WITH agg AS (
-            SELECT one.county, one.state, two.commercial_ops
+            SELECT one.county, one.state, one.geoid, two.commercial_ops
             FROM countylatlong AS one
             CROSS JOIN placeairports AS two
             WHERE ST_Distance(one.geom, two.geom) < {0}
@@ -62,7 +62,26 @@ def fltr_air(minimum, maximum, radius):
         """.format(radius, minimum, maximum))
     value_air = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Air'])
     con.close()
-    return value_county
+    return value_air
+
+def fltr_parks(minimum, maximum, radius):
+    cur, con = con_cur()
+    cur.execute("""
+        WITH agg AS (
+            SELECT one.county, one.state, one.geoid, two.objectid
+            FROM countylatlong AS one
+            CROSS JOIN placerecreation AS two
+            WHERE ST_Distance(one.geom, two.geom) < {0}
+            )
+        SELECT county, state, LPAD(geoid, 5, '0'), COUNT(objectid) AS num_parks
+        FROM agg
+        GROUP BY county, state
+        WHERE num_parks > {1}
+        AND num_parks < {2}
+        """.format(radius, minimum, maximum))
+    value_parks = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Air'])
+    con.close()
+    return value_parks
 
 def rank(retDF, col_name):
     # popDF = pd.DataFrame([[10, 'A'], [7, 'A'], [9, 'A'], [8, 'C'], [4, 'B'], [2, 'B'], [5, 'D'], [1, 'D'], [2, 'B']], columns = ['Number', 'Letter'])    
