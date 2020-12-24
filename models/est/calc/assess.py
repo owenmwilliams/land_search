@@ -3,10 +3,15 @@ import pandas as pd
 
 # get pop, value, share, air, parks_num
 pop = ft.rank_low(ft.fltr_pop(0, 1000000), 'Pop')
+print(pop)
 value = ft.rank_low(ft.fltr_value(0, 1000000), 'Value')
+print(value)
 share = ft.rank_low(ft.fltr_share(0, 1000000), 'Share')
-air = ft.rank_high(ft.fltr_air(0, 100000, 5), 'Air')
+print(share)
+air = ft.rank_high(ft.fltr_air(0, 10000000, 5), 'Air')
+print(air)
 parks = ft.rank_high(ft.fltr_parks(0, 10000, 5), 'Parks')
+print(parks)
 
 # join datasets
 pv = pd.merge(pop, value, on='FIPS')
