@@ -25,10 +25,10 @@ pvsap['assessment'] = 0.2*pvsap['deciles_Pop'] + 0.2*pvsap['deciles_Value'] + 0.
 print(pvsap)
 
 # rank & order counties
-pvsap = pvsap.sort_values(by='assessment')
+pvsap = pvsap.sort_values(by='assessment', ascending=False)
 print(pvsap)
 
 # drop decile columns & limit to top20
 pvsap.drop(['deciles_Pop', 'deciles_Value', 'deciles_Share', 'deciles_Air', 'deciles_Parks'], axis=1, inplace=True)
-pvsap = pvsap.iloc[:19,:]
+pvsap = pvsap.iloc[:20,:]
 print(pvsap)
