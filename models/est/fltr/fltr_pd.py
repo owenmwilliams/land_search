@@ -4,7 +4,7 @@ from psycopg2 import sql
 from est.db.cur import con_cur
 import pandas as pd
 
-# return a county based on population bounds
+# return a list of counties based on population bounds
 def fltr_pop(minimum, maximum):
     cur, con = con_cur()
     cur.execute("""
@@ -17,8 +17,7 @@ def fltr_pop(minimum, maximum):
     con.close()
     return pop_county
 
-# TODO: All these functions need to remove any results that say 'Not enough comps.'
-
+# return a list of counties based on value bounds
 def fltr_value(minimum, maximum):
     cur, con = con_cur()
     cur.execute("""
@@ -32,6 +31,7 @@ def fltr_value(minimum, maximum):
     con.close()
     return value_county
 
+# return a list of counties based on share bounds
 def fltr_share(minimum, maximum):
     cur, con = con_cur()
     cur.execute("""
@@ -45,6 +45,7 @@ def fltr_share(minimum, maximum):
     con.close()
     return value_county
 
+# return a list of counties based on commercial air traffic bounds
 def fltr_air(minimum, maximum, radius):
     cur, con = con_cur()
     cur.execute("""
@@ -64,6 +65,7 @@ def fltr_air(minimum, maximum, radius):
     con.close()
     return value_air
 
+# return a list of counties based on parks bounds
 def fltr_parks(minimum, maximum, radius):
     cur, con = con_cur()
     cur.execute("""
@@ -79,12 +81,18 @@ def fltr_parks(minimum, maximum, radius):
         WHERE num_parks > {1}
         AND num_parks < {2}
         """.format(radius, minimum, maximum))
-    value_parks = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Air'])
+    value_parks = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Parks'])
     con.close()
     return value_parks
 
-def rank(retDF, col_name):
+def rank_high(retDF, col_name):
     # popDF = pd.DataFrame([[10, 'A'], [7, 'A'], [9, 'A'], [8, 'C'], [4, 'B'], [2, 'B'], [5, 'D'], [1, 'D'], [2, 'B']], columns = ['Number', 'Letter'])    
     retDF = retDF
     retDF['deciles_{0}'.format(col_name)] = (pd.qcut(retDF[col_name], 10, labels = False) + 1) / 10
+    return retDF
+
+def rank_low(retDF, col_name):
+    # popDF = pd.DataFrame([[10, 'A'], [7, 'A'], [9, 'A'], [8, 'C'], [4, 'B'], [2, 'B'], [5, 'D'], [1, 'D'], [2, 'B']], columns = ['Number', 'Letter'])    
+    retDF = retDF
+    retDF['deciles_{0}'.format(col_name)] = (10 - pd.qcut(retDF[col_name], 10, labels = False)) / 10
     return retDF
