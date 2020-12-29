@@ -4,22 +4,23 @@ interactive command application.
 Usage:
     land_search find_lucky
     land_search find_state <state>...
-    land_search estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) (<cty_fips>...)
+    land_search estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) [-l] (<cty_fips>...)
     land_search search (simple [--value=<value> --share=<percent> --population=<pop>] | complex [--value=<value> --share=<percent> --population=<pop> --air_prox=<air> --parks_prox=<parks> --parks_num=<nparks>])
     land_search test <arguments>...
     land_search (-i | --interactive)
     land_search (-h | --help)
     land_search (-v | --version)
 Options:
-    -i, --interactive  Interactive Mode
-    -h, --help         Show this screen and exit
-    -v, --version      Show version
-    --radius=<deg>     Radius to search within for comparable counties in deg lat / long [default: 2]
-    --pop=<percent>    Population percent +/- on county being estimated [default: 1]
-    --comps=<number>   Number of comps requested for a given county estimation [default: 5]
-    --value=<value>    Maximum value to search on in $/square acre. [default: 50000]
-    --share=<percent>  Maximum share of value that is attributable to land. [default: 0.25]
-    --population=<pop>        Maximum population of a counties to search on. [default: 100000]
+    -i, --interactive     Interactive Mode
+    -h, --help            Show this screen and exit
+    -v, --version         Show version
+    -l                    Run local
+    --radius=<deg>        Radius to search within for comparable counties in deg lat / long [default: 2]
+    --pop=<percent>       Population percent +/- on county being estimated [default: 1]
+    --comps=<number>      Number of comps requested for a given county estimation [default: 5]
+    --value=<value>       Maximum value to search on in $/square acre. [default: 50000]
+    --share=<percent>     Maximum share of value that is attributable to land. [default: 0.25]
+    --population=<pop>    Maximum population of a counties to search on. [default: 100000]
     --air_prox=<air>      Proximity of a major airport. [default: 3]
     --parks_prox=<parks>  Proximity within which to search for nearby parks. [default: 5]
     --parks_num=<nparks>  Number of parks needed within parks proximity. [default: 3]
@@ -96,19 +97,28 @@ class MyInteractive (cmd.Cmd):
 
     @docopt_cmd
     def do_estimate(self, arg):
-        """Usage: estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) (<cty_fips>)...
+        """Usage: estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) [-l] (<cty_fips>)...
 
             Options:
             --radius=<deg>     Radius to search within for comparable counties in deg lat / long. [default: 2]
             --pop=<percent>    Population percent +/- on county being estimated. [default: 1]
             --comps=<number>   Number of comps requested for a given county estimation. [default: 5]
+            -l                 Runs local
         """
         if arg['params'] is True:
-            for _ in range(len(arg['<cty_fips>'])):
-                se.se_est_params(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
+            if arg['-l'] is False:
+                for _ in range(len(arg['<cty_fips>'])):
+                    se.se_est_params('cluster', arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
+            else:
+                for _ in range(len(arg['<cty_fips>'])):    
+                    se.se_est_params('other', arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
         elif arg['comps'] is True:
-            for _ in range(len(arg['<cty_fips>'])):
-                se.se_est_comps(arg['--comps'], arg['<cty_fips>'][_])
+            if arg['-l'] is False:
+                for _ in range(len(arg['<cty_fips>'])):
+                    se.se_est_comps('cluster', arg['--comps'], arg['<cty_fips>'][_])
+            elif arg['-l'] is True:
+                for _ in range(len(arg['<cty_fips>'])):    
+                    se.se_est_comps('other', arg['--comps'], arg['<cty_fips>'][_])
 
     @docopt_cmd
     def do_search(self, arg):

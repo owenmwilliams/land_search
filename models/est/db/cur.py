@@ -1,11 +1,9 @@
 import psycopg2
 import socket
 
-# TODO: Check to see if socket --> hostname will work on pi vs. local
-
 def con_cur():
     host = socket.gethostname()
-    if host = 'pi0':
+    if host == 'pi0':
         db = "v003"
         port = "5432"
     else:
