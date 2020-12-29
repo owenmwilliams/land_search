@@ -15,7 +15,6 @@ def fltr_pop(minimum, maximum):
         """.format(minimum, maximum))
     pop_county = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Pop'])
     con.close()
-    print(pop_county)
     return pop_county
 
 # return a list of counties based on value bounds
@@ -32,7 +31,6 @@ def fltr_value(minimum, maximum):
     value_county = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Value'])
     value_county = value_county.astype({'Value':int})
     con.close()
-    print(value_county)
     return value_county
 
 # return a list of counties based on share bounds
@@ -49,7 +47,6 @@ def fltr_share(minimum, maximum):
     share_county = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Share'])
     share_county = share_county.astype({'Share':float})
     con.close()
-    print(share_county)
     return share_county
 
 # return a list of counties based on commercial air traffic bounds
@@ -74,7 +71,6 @@ def fltr_air(minimum, maximum, radius):
     air_county = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Air'])
     air_county = air_county.astype({'Air':int})
     con.close()
-    print(air_county)
     return air_county
 
 # return a list of counties based on parks bounds
@@ -98,7 +94,6 @@ def fltr_parks(minimum, maximum, radius):
     parks_county = pd.DataFrame(cur.fetchall(), columns = ['County', 'State', 'FIPS', 'Parks'])
     parks_county = parks_county.astype({'Parks':int})
     con.close()
-    print(parks_county)
     return parks_county
 
 def rank_high(retDF, col_name):

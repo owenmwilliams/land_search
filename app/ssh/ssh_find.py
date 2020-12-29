@@ -12,12 +12,27 @@ ssh_key = os.getenv("ssh_key")
 version = os.getenv("version")
 
 def sf_lucky():
-    client = paramiko.SSHClient()
-    client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(remote_host, port=remote_port, username=remote_user, key_filename=ssh_key)
-    transport = client.get_transport()
-    channel = client.invoke_shell()
+
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(remote_host, port=remote_port, username=remote_user, key_filename=ssh_key)
+        transport = client.get_transport()
+        channel = client.invoke_shell()
+
+    # def myssh():
+    #     client = paramiko.SSHClient()
+    #     client.load_system_host_keys()
+    #     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    #     client.connect(remote_host, port=remote_port, username=remote_user, key_filename=ssh_key)
+    #     transport = client.get_transport()
+    #     channel = client.invoke_shell()
+
+    # if arg_whatever = cluster:  TODO: all ssh functions will require local v cluster arg
+    #     channel = myssh()
+    #     stdin = channel...
+    # else:
+    #     invoke python ## main.findlucky
 
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')

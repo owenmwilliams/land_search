@@ -1,24 +1,13 @@
 import os
 from dotenv import load_dotenv
 import paramiko
-import time
 import io
+from connect import ssh_postgres as sshp
 
-load_dotenv()
-remote_user = 'postgres'
-remote_host = 'pi0'
-remote_port = 22
-ssh_key = os.getenv("ssh_key")
-version = os.getenv("version")
+# TODO: Check that sshp function works here, then apply to all others
 
 def se_est_params(pop, rad, fips):
-    client = paramiko.SSHClient()
-    client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(remote_host, port=remote_port, username=remote_user, key_filename=ssh_key)
-    transport = client.get_transport()
-    channel = client.invoke_shell()
-
+    transport, channel = sshp()
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')
     stdin.write("""
