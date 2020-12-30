@@ -3,6 +3,7 @@ import socket
 
 def con_cur():
     host = socket.gethostname()
+    print(host)
     if host == 'pi0':
         db = "v003"
         port = "5432"

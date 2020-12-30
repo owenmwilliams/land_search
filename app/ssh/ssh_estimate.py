@@ -5,13 +5,11 @@ import io
 from ssh.connect import ssh_postgres as sshp
 import main
 
-# TODO: Check that sshp function works here, then apply to all others
+# TODO: Check to see that not-local flag works, add exception handling for not using local flag
 
 def se_est_params(mode, pop, rad, fips):
     if mode == 'cluster':
-        transport, channel = sshp()
-        stdin = channel.makefile('w')
-        stdout = channel.makefile('r')
+        version, transport, channel, stdin, stdout = sshp()
 
         stdin.write("""
         cd /opt/ls-cluster-{0}/models
@@ -39,9 +37,7 @@ def se_est_params(mode, pop, rad, fips):
 
 def se_est_comps(mode, comps, fips):
     if mode == 'cluster':
-        transport, channel = sshp()
-        stdin = channel.makefile('w')
-        stdout = channel.makefile('r')
+        version, transport, channel, stdin, stdout = sshp()
         
         stdin.write("""
         cd /opt/ls-cluster-{0}/models

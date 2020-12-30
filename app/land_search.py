@@ -77,23 +77,40 @@ class MyInteractive (cmd.Cmd):
     @docopt_cmd
     def do_find_lucky(self, arg):
         """Usage: find_lucky"""
-        sf.sf_lucky()
+        if arg['-l'] is False:
+            sf.sf_lucky('cluster')
+        else:
+            sf.sf_lucky('other')
 
     @docopt_cmd
     def do_find_state(self, arg):
         """Usage: find_state <state>..."""      
-        for _ in range(len(arg['<state>'])):
-            try:
-                state = arg['<state>'][_]
-                sf.sf_state(state)
-            except:
-                pass
-            else:
+        if arg['-l'] is False:
+            for _ in range(len(arg['<state>'])):
                 try:
-                    state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
-                    sf.sf_state(state)
+                    state = arg['<state>'][_]
+                    sf.sf_state('cluster', state)
                 except:
                     pass
+                else:
+                    try:
+                        state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
+                        sf.sf_state('cluster', state)
+                    except:
+                        pass
+        else:
+            for _ in range(len(arg['<state>'])):
+                try:
+                    state = arg['<state>'][_]
+                    sf.sf_state('other', state)
+                except:
+                    pass
+                else:
+                    try:
+                        state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
+                        sf.sf_state('other', state)
+                    except:
+                        pass         
 
     @docopt_cmd
     def do_estimate(self, arg):
