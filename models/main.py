@@ -11,11 +11,13 @@ pd.set_option('display.max_columns', None)
 
 def find_lucky():
     x = county_return.random_county()
-    return x
+    # return x
+    print(x)
 
 def find_state(state):
     array = county_return.state_search(state)
-    return array
+    # return array
+    print(array)
 
 def params_estimate(population, radius, cty_fips):
     print('*****')

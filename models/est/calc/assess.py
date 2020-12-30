@@ -1,16 +1,28 @@
 from est.fltr import fltr_pd as ft
 import pandas as pd
+import yaml
 
-def county_assess(minmax_list, weight_list, air_radius, parks_radius):
-    minmax_list = [0,1000000,0,1000000,0,1000000,0,10000000,0,10000]
-    weight_list = [0.2, 0.2, 0.2, 0.2, 0.2]
+def county_assess(doc_path):
+    # pull values from YAML file (TODO: make local or cluster)
+    stream = open(doc_path)
+    boundaries = yaml.load_all(stream, Loader=yaml.FullLoader)
+    for data in boundaries:
+        for j, k in data.items():
+            if j == 'minimums':
+                minimums = k
+            elif j == 'maximums':
+                maximums = k
+            elif j == 'weights':
+                weights = k
+            elif j == 'radius':
+                radius = k
     
     # get pop, value, share, air, parks_num
-    pop = ft.rank_low(ft.fltr_pop(minmax_list[0], minmax_list[1]), 'Pop')
-    value = ft.rank_low(ft.fltr_value(minmax_list[2], minmax_list[3]), 'Value')
-    share = ft.rank_low(ft.fltr_share(minmax_list[4], minmax_list[5]), 'Share')
-    air = ft.rank_high(ft.fltr_air(minmax_list[6], minmax_list[7], air_radius), 'Air')
-    parks = ft.rank_high(ft.fltr_parks(minmax_list[8], minmax_list[9], parks_radius), 'Parks')
+    pop = ft.rank_low(ft.fltr_pop(minimums['pop'], maximums['pop']), 'Pop')
+    value = ft.rank_low(ft.fltr_value(minimums['value'], maximums['value']), 'Value')
+    share = ft.rank_low(ft.fltr_share(minimums['share'], maximums['share']), 'Share')
+    air = ft.rank_high(ft.fltr_air(minimums['air'], maximums['air'], radius['air']), 'Air')
+    parks = ft.rank_high(ft.fltr_parks(minimums['parks'], maximums['parks'], radius['parks']), 'Parks')
 
     # join datasets
     pv = pd.merge(pop, value, on='FIPS')
