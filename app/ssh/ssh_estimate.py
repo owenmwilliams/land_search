@@ -37,26 +37,31 @@ def se_est_params(mode, pop, rad, fips):
 
 def se_est_comps(mode, comps, fips):
     if mode == 'cluster':
-        version, transport, channel, stdin, stdout = sshp()
-        
-        stdin.write("""
-        cd /opt/ls-cluster-{0}/models
-        python3 -c 'import main; x = main.comps_estimate({1}, {2}); print(x)'
-        exit
-        """.format(version, comps, fips))
+        try:    
+            version, transport, channel, stdin, stdout = sshp()
+            
+            stdin.write("""
+            cd /opt/ls-cluster-{0}/models
+            python3 -c 'import main; x = main.comps_estimate({1}, {2}); print(x)'
+            exit
+            """.format(version, comps, fips))
 
-        while True:
-            line = stdout.readline()
-            if not line:
-                break
-            elif line.strip().startswith('*****'):
-                while not line.strip().startswith('#####'):
-                    line = stdout.readline()
-                    print(line.rstrip())
-                print('_________________________________________________________')
+            while True:
+                line = stdout.readline()
+                if not line:
+                    break
+                elif line.strip().startswith('*****'):
+                    while not line.strip().startswith('#####'):
+                        line = stdout.readline()
+                        print(line.rstrip())
+                    print('_________________________________________________________')
 
-        stdout.close()
-        stdin.close()
-        client.close()
+            stdout.close()
+            stdin.close()
+            client.close()
+        except:
+            print('LAN cluster not found! Running locally.')
+            main.comps_estimate(comps, fips)
+
     else:
         main.comps_estimate(comps, fips)
