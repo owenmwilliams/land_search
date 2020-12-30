@@ -36,9 +36,9 @@ def ss_search_simple(mode, value, share, pop):
 
             stdout.close()
             stdin.close()
-            client.close()
-        except:
-            print('LAN cluster not found! Running locally.')
+            channel.close()
+        except Exception as e:
+            print('LAN cluster not found! Running locally. Error: %s' % e)
             main.search_all(value, share, pop)
     else:
         main.search_all(value, share, pop)
@@ -65,9 +65,9 @@ def ss_search_complex(mode, value, share, pop, air_prox, parks_prox, parks_num):
 
             stdout.close()
             stdin.close()
-            client.close()
-        except:
-            print('LAN cluster not found! Running locally.')
+            channel.close()
+        except Exception as e:
+            print('LAN cluster not found! Running locally. Error: %s' % e)
             main.search_complex(value, share, pop, air_prox, parks_prox, parks_num)
     else:
         main.search_complex(value, share, pop, air_prox, parks_prox, parks_num)

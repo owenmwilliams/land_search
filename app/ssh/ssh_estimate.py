@@ -30,9 +30,9 @@ def se_est_params(mode, pop, rad, fips):
 
             stdout.close()
             stdin.close()
-            client.close()
-        except:
-            print('LAN cluster not found! Running locally.')
+            channel.close()
+        except Exception as e:
+            print('LAN cluster not found! Running locally. Error: %s' % e)
             main.params_estimate(pop, rad, fips)
     else:
         main.params_estimate(pop, rad, fips)
@@ -62,9 +62,9 @@ def se_est_comps(mode, comps, fips):
 
             stdout.close()
             stdin.close()
-            client.close()
-        except:
-            print('LAN cluster not found! Running locally.')
+            channel.close()
+        except Exception as e:
+            print('LAN cluster not found! Running locally. Error: %s' % e)
             main.comps_estimate(comps, fips)
     else:
         main.comps_estimate(comps, fips)

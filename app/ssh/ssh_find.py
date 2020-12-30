@@ -29,9 +29,9 @@ def sf_lucky(mode):
             print('*********************************************************')
             stdout.close()
             stdin.close()
-            client.close()
-        except:
-            print('LAN cluster not found! Running locally.')
+            channel.close()
+        except Exception as e:
+            print('LAN cluster not found! Running locally. Error: %s' % e)
             main.find_lucky()
     else:
         main.find_lucky()
@@ -69,9 +69,9 @@ def sf_state(mode, state):
             print('*********************************************************')
             stdout.close()
             stdin.close()
-            client.close()
-        except:
-            print('LAN cluster not found! Running locally.')
+            channel.close()
+        except Exception as e:
+            print('LAN cluster not found! Running locally. Error: %s' % e)
             main.find_state(state)
     else:
         main.find_state(state)
