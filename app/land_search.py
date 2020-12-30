@@ -2,10 +2,10 @@
 This example uses docopt with the built in cmd module to demonstrate an
 interactive command application.
 Usage:
-    land_search find_lucky
-    land_search find_state <state>...
-    land_search estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) [-l] (<cty_fips>...)
-    land_search search (simple [--value=<value> --share=<percent> --population=<pop>] | complex [--value=<value> --share=<percent> --population=<pop> --air_prox=<air> --parks_prox=<parks> --parks_num=<nparks>])
+    land_search find_lucky [-l]
+    land_search find_state [-l] <state>...
+    land_search estimate [-l] (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) [-l] (<cty_fips>...)
+    land_search search [-l] (simple [--value=<value> --share=<percent> --population=<pop>] | complex [--value=<value> --share=<percent> --population=<pop> --air_prox=<air> --parks_prox=<parks> --parks_num=<nparks>])
     land_search test <arguments>...
     land_search (-i | --interactive)
     land_search (-h | --help)
@@ -76,7 +76,11 @@ class MyInteractive (cmd.Cmd):
 
     @docopt_cmd
     def do_find_lucky(self, arg):
-        """Usage: find_lucky"""
+        """Usage: find_lucky [-l]
+
+            Options: 
+            -l                 Runs local        
+        """
         if arg['-l'] is False:
             sf.sf_lucky('cluster')
         else:
@@ -84,7 +88,11 @@ class MyInteractive (cmd.Cmd):
 
     @docopt_cmd
     def do_find_state(self, arg):
-        """Usage: find_state <state>..."""      
+        """Usage: find_state [-l] <state>...
+        
+            Options: 
+            -l                 Runs local
+        """      
         if arg['-l'] is False:
             for _ in range(len(arg['<state>'])):
                 try:
@@ -114,7 +122,7 @@ class MyInteractive (cmd.Cmd):
 
     @docopt_cmd
     def do_estimate(self, arg):
-        """Usage: estimate (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) [-l] (<cty_fips>)...
+        """Usage: estimate [-l] (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) (<cty_fips>)...
 
             Options:
             --radius=<deg>     Radius to search within for comparable counties in deg lat / long. [default: 2]
@@ -139,7 +147,7 @@ class MyInteractive (cmd.Cmd):
 
     @docopt_cmd
     def do_search(self, arg):
-        """Usage: search (simple [--value=<value> --share=<percent> --population=<pop>] | complex [--value=<value> --share=<percent> --population=<pop> --air_prox=<air> --parks_prox=<parks> --parks_num=<nparks>])
+        """Usage: search [-l] (simple [--value=<value> --share=<percent> --population=<pop>] | complex [--value=<value> --share=<percent> --population=<pop> --air_prox=<air> --parks_prox=<parks> --parks_num=<nparks>])
 
             Options:
             --value=<value>       Maximum value to search on in $/square acre. [default: 50000]
@@ -148,11 +156,18 @@ class MyInteractive (cmd.Cmd):
             --air_prox=<air>      Proximity of a major airport. [default: 3]
             --parks_prox=<parks>  Proximity within which to search for nearby parks. [default: 5]
             --parks_num=<nparks>  Number of parks needed within parks proximity. [default: 3]
+            -l                    Runs local
         """
         if arg['simple'] is True:
-            ss.ss_search_simple(arg['--value'], arg['--share'], arg['--population'])
+            if arg['-l'] is False:
+                ss.ss_search_simple('cluster', arg['--value'], arg['--share'], arg['--population'])
+            else:
+                ss.ss_search_simple('other', arg['--value'], arg['--share'], arg['--population'])
         elif arg['complex'] is True:
-            ss.ss_search_complex(arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
+            if arg['-l'] is False:
+                ss.ss_search_complex('cluster', arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
+            else:
+                ss.ss_search_complex('other', arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
     
     @docopt_cmd
     def do_test(self, arg):
