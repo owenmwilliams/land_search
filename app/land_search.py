@@ -32,6 +32,7 @@ from docopt import docopt, DocoptExit
 import ssh.ssh_find as sf
 import ssh.ssh_estimate as se
 import ssh.ssh_search as ss
+import ssh.ssh_assess as sa
 import main
 import pandas as pd
 
@@ -168,7 +169,23 @@ class MyInteractive (cmd.Cmd):
                 ss.ss_search_complex('cluster', arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
             else:
                 ss.ss_search_complex('other', arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
-    
+
+    @docopt_cmd
+    def do_assess(self, arg):
+        """Usage: assess [-l] [--file=<doc_path>]
+
+            Options:
+            -l                    Runs local
+            --file=<doc_path>        Defines an input YAML file for variables. [default: './est/calc/defaults.yaml']
+        """
+        if arg['--file'] is './est/calc/defaults.yaml':
+            if arg['-l'] is False:
+                sa.sa_assess('cluster', arg['--file'])
+            else:
+                main.assess('other', arg['--file'])
+        else:
+            # TODO: fill out non-default path approach...
+
     @docopt_cmd
     def do_test(self, arg):
         """Usage: test <arguments>..."""

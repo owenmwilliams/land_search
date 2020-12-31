@@ -2,6 +2,7 @@ import est.fltr.county_return as county_return
 import est.fltr.search as search
 import est.fltr.comps as comps
 import est.calc.constr as constr
+import est.calc.assess as assess
 from datetime import datetime
 import pandas as pd
 import os
@@ -71,4 +72,9 @@ def search_complex(value, share, pop, air_prox, parks_prox, parks_num):
     print(top20)
     print('#####')
 
+def assess(doc_path):
+    top20 = assess.county_assess(doc_path)
+    print('*****')
+    print(top20)
+    print('#####')
 # # census_loop("census_table")
