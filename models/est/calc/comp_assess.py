@@ -4,6 +4,7 @@ import yaml
 
 def county_assess(doc_path):
     # pull values from YAML file (TODO: make local or cluster)
+    print(doc_path)
     stream = open(doc_path)
     boundaries = yaml.load_all(stream, Loader=yaml.FullLoader)
     for data in boundaries:
@@ -40,3 +41,7 @@ def county_assess(doc_path):
     pvsap = pvsap[['assessment','County', 'State','FIPS','Pop', 'Value', 'Share', 'Air', 'Parks']]
     pvsap = pvsap.iloc[:20,:]
     return pvsap
+
+def other_function():
+    print('Other function')
+    

@@ -85,7 +85,7 @@ class MyInteractive (cmd.Cmd):
         if arg['-l'] is False:
             sf.sf_lucky('cluster')
         else:
-            sf.sf_lucky('other')
+            main.find_lucky()
 
     @docopt_cmd
     def do_find_state(self, arg):
@@ -111,13 +111,13 @@ class MyInteractive (cmd.Cmd):
             for _ in range(len(arg['<state>'])):
                 try:
                     state = arg['<state>'][_]
-                    sf.sf_state('other', state)
+                    main.find_state(state)
                 except:
                     pass
                 else:
                     try:
                         state = arg['<state>'][_] + ' ' + arg['<state>'][_+1]
-                        sf.sf_state('other', state)
+                        main.find_state(state)
                     except:
                         pass         
 
@@ -137,14 +137,14 @@ class MyInteractive (cmd.Cmd):
                     se.se_est_params('cluster', arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
             else:
                 for _ in range(len(arg['<cty_fips>'])):    
-                    se.se_est_params('other', arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
+                    main.params_estimate(arg['--pop'], arg['--radius'], arg['<cty_fips>'][_])
         elif arg['comps'] is True:
             if arg['-l'] is False:
                 for _ in range(len(arg['<cty_fips>'])):
                     se.se_est_comps('cluster', arg['--comps'], arg['<cty_fips>'][_])
             elif arg['-l'] is True:
                 for _ in range(len(arg['<cty_fips>'])):    
-                    se.se_est_comps('other', arg['--comps'], arg['<cty_fips>'][_])
+                    main.comps_estimate(arg['--comps'], arg['<cty_fips>'][_])
 
     @docopt_cmd
     def do_search(self, arg):
@@ -163,27 +163,27 @@ class MyInteractive (cmd.Cmd):
             if arg['-l'] is False:
                 ss.ss_search_simple('cluster', arg['--value'], arg['--share'], arg['--population'])
             else:
-                ss.ss_search_simple('other', arg['--value'], arg['--share'], arg['--population'])
+                main.search_all(arg['--value'], arg['--share'], arg['--population'])
         elif arg['complex'] is True:
             if arg['-l'] is False:
                 ss.ss_search_complex('cluster', arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
             else:
-                ss.ss_search_complex('other', arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
-
+                main.search_complex(arg['--value'], arg['--share'], arg['--population'], arg['--air_prox'], arg['--parks_prox'], arg['--parks_num'])
+                
     @docopt_cmd
     def do_assess(self, arg):
         """Usage: assess [-l] [--file=<doc_path>]
 
             Options:
             -l                    Runs local
-            --file=<doc_path>        Defines an input YAML file for variables. [default: './est/calc/defaults.yaml']
+            --file=<doc_path>        Defines an input YAML file for variables. [default: '~/Projects/land_search/models/est/calc/defaults.yaml']
         """
-        if arg['--file'] is './est/calc/defaults.yaml':
-            if arg['-l'] is False:
-                sa.sa_assess('cluster', arg['--file'])
-            else:
-                main.assess('other', arg['--file'])
+        # if arg['--file'] == './est/calc/defaults.yaml':
+        if arg['-l'] is False:
+            sa.sa_assess('cluster', arg['--file'])
         else:
+            main.assess(arg['--file'])
+        # else:
             # TODO: fill out non-default path approach...
 
     @docopt_cmd

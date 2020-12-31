@@ -2,7 +2,7 @@ import est.fltr.county_return as county_return
 import est.fltr.search as search
 import est.fltr.comps as comps
 import est.calc.constr as constr
-import est.calc.assess as assess
+import est.calc.comp_assess as comp_assess
 from datetime import datetime
 import pandas as pd
 import os
@@ -73,7 +73,7 @@ def search_complex(value, share, pop, air_prox, parks_prox, parks_num):
     print('#####')
 
 def assess(doc_path):
-    top20 = assess.county_assess(doc_path)
+    top20 = comp_assess.county_assess(doc_path)
     print('*****')
     print(top20)
     print('#####')
