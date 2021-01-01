@@ -176,7 +176,7 @@ class MyInteractive (cmd.Cmd):
 
             Options:
             -l                    Runs local
-            --file=<doc_path>        Defines an input YAML file for variables. [default: '~/Projects/land_search/models/est/calc/defaults.yaml']
+            --file=<doc_path>        Defines an input YAML file for variables. [default: /Users/owenwilliams/Projects/land_search/models/est/calc/defaults.yaml]
         """
         # if arg['--file'] == './est/calc/defaults.yaml':
         if arg['-l'] is False:

@@ -32,7 +32,7 @@ def county_assess(doc_path):
     pvsap = pd.merge(pvsa, parks, on='FIPS')
 
     # calc assessment (including weighted inputs)
-    pvsap['assessment'] = weight_list[0]*pvsap['deciles_Pop'] + weight_list[1]*pvsap['deciles_Value'] + weight_list[2]*pvsap['deciles_Share'] + weight_list[3]*pvsap['deciles_Air'] + weight_list[4]*pvsap['deciles_Parks']
+    pvsap['assessment'] = weights['pop']*pvsap['deciles_Pop'] + weights['value']*pvsap['deciles_Value'] + weights['share']*pvsap['deciles_Share'] + weights['air']*pvsap['deciles_Air'] + weights['parks']*pvsap['deciles_Parks']
 
     # rank & order counties
     pvsap = pvsap.sort_values(by='assessment', ascending=False)
