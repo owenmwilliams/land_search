@@ -72,8 +72,8 @@ def search_complex(value, share, pop, air_prox, parks_prox, parks_num):
     print(top20)
     print('#####')
 
-def assess(doc_path):
-    top20 = comp_assess.county_assess(doc_path)
+def assess(minimums, maximums, weights, radius):
+    top20 = comp_assess.county_assess(minimums, maximums, weights, radius)
     print('*****')
     print(top20)
     print('#####')

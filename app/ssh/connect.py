@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import paramiko
+import yaml
 
 def ssh_postgres():
     load_dotenv()
@@ -18,3 +19,18 @@ def ssh_postgres():
     stdin = channel.makefile('w')
     stdout = channel.makefile('r')
     return version, transport, channel, stdin, stdout
+
+def yaml_import(doc_path):
+    stream = open(doc_path)
+    boundaries = yaml.load_all(stream, Loader=yaml.FullLoader)
+    for data in boundaries:
+        for j, k in data.items():
+            if j == 'minimums':
+                minimums = k
+            elif j == 'maximums':
+                maximums = k
+            elif j == 'weights':
+                weights = k
+            elif j == 'radius':
+                radius = k
+    return minimums, maximums, weights, radius

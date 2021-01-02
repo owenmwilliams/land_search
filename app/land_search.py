@@ -33,6 +33,7 @@ import ssh.ssh_find as sf
 import ssh.ssh_estimate as se
 import ssh.ssh_search as ss
 import ssh.ssh_assess as sa
+import ssh.connect as connect
 import main
 import pandas as pd
 
@@ -176,13 +177,14 @@ class MyInteractive (cmd.Cmd):
 
             Options:
             -l                    Runs local
-            --file=<doc_path>        Defines an input YAML file for variables. [default: /Users/owenwilliams/Projects/land_search/models/est/calc/defaults.yaml]
+            --file=<doc_path>     Defines an input YAML file for variables. [default: /Users/owenwilliams/Projects/land_search/models/config/defaults.yaml]
         """
         # if arg['--file'] == './est/calc/defaults.yaml':
         if arg['-l'] is False:
             sa.sa_assess('cluster', arg['--file'])
         else:
-            main.assess(arg['--file'])
+            minimums, maximums, weights, radius = connect.yaml_import(arg['--file'])
+            main.assess(minimums, maximums, weights, radius)
         # else:
             # TODO: fill out non-default path approach...
 

@@ -2,22 +2,7 @@ from est.fltr import fltr_pd as ft
 import pandas as pd
 import yaml
 
-def county_assess(doc_path):
-    # pull values from YAML file (TODO: make local or cluster)
-    print(doc_path)
-    stream = open(doc_path)
-    boundaries = yaml.load_all(stream, Loader=yaml.FullLoader)
-    for data in boundaries:
-        for j, k in data.items():
-            if j == 'minimums':
-                minimums = k
-            elif j == 'maximums':
-                maximums = k
-            elif j == 'weights':
-                weights = k
-            elif j == 'radius':
-                radius = k
-    
+def county_assess(minimums, maximums, weights, radius):   
     # get pop, value, share, air, parks_num
     pop = ft.rank_low(ft.fltr_pop(minimums['pop'], maximums['pop']), 'Pop')
     value = ft.rank_low(ft.fltr_value(minimums['value'], maximums['value']), 'Value')
