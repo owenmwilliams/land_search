@@ -1,9 +1,15 @@
 import psycopg2
-
-db = "v003"
+import socket
 
 def con_cur():
-    con = psycopg2.connect(database=db, host="localhost", port="5432")
+    host = socket.gethostname()
+    if host == 'pi0':
+        db = "v004"
+        port = "5432"
+    else:
+        db = "owenwilliams"
+        port = "5436"
+    con = psycopg2.connect(database=db, host=host, port=port)
     cur = con.cursor()
     return cur, con
     

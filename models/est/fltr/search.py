@@ -59,9 +59,10 @@ def search_complex(value, share, pop, air_prox, parks_prox, parks_num):
 					ON trim(sortp.county) = trim(clc.county) 
 					AND trim(sortp.state) = trim(clc.state)
 				WHERE clc.land_value_estimate <> 'Not enough comps.' 
-					AND clc.population < {2}
-					AND clc.land_value_estimate < {3}
-					AND clc.land_share_estimate < {4}
+					AND clc.land_value_estimate <> 'estimate'
+					AND clc.population::integer < {2}
+					AND clc.land_value_estimate::integer < {3}
+					AND clc.land_share_estimate::decimal < {4}
 					AND sort.rn = 1
 					AND sortp.num_parks > {5}
 				ORDER BY clc.land_value_estimate ASC 
