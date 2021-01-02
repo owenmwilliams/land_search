@@ -4,7 +4,7 @@ import socket
 def con_cur():
     host = socket.gethostname()
     if host == 'pi0':
-        db = "v003"
+        db = "v004"
         port = "5432"
     else:
         db = "owenwilliams"
@@ -12,11 +12,4 @@ def con_cur():
     con = psycopg2.connect(database=db, host=host, port=port)
     cur = con.cursor()
     return cur, con
-    
-    # if socket.gethostname() = 'pi0':
-    #     con = psycopg2.connect(database=db, host="localhost", port="5432")
-    #     cur = con.cursor()
-    #     return cur, con
-    # else:
-    #     con = psycopg2.connect(database=db, host=)
     

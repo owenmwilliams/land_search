@@ -185,8 +185,6 @@ class MyInteractive (cmd.Cmd):
         else:
             minimums, maximums, weights, radius = connect.yaml_import(arg['--file'])
             main.assess(minimums, maximums, weights, radius)
-        # else:
-            # TODO: fill out non-default path approach...
 
     @docopt_cmd
     def do_test(self, arg):

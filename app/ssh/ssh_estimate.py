@@ -5,8 +5,6 @@ import io
 from ssh.connect import ssh_postgres as sshp
 import main
 
-# TODO: Check to see that not-local flag works, add exception handling for not using local flag
-
 def se_est_params(mode, pop, rad, fips):
     if mode == 'cluster':
         try:
@@ -34,10 +32,6 @@ def se_est_params(mode, pop, rad, fips):
         except Exception as e:
             print('LAN cluster not found! Running locally. Error: %s' % e)
             main.params_estimate(pop, rad, fips)
-    else:
-        main.params_estimate(pop, rad, fips)
-
-# TODO: Check to see if flag works here for local vs. cluster
 
 def se_est_comps(mode, comps, fips):
     if mode == 'cluster':
@@ -66,5 +60,3 @@ def se_est_comps(mode, comps, fips):
         except Exception as e:
             print('LAN cluster not found! Running locally. Error: %s' % e)
             main.comps_estimate(comps, fips)
-    else:
-        main.comps_estimate(comps, fips)

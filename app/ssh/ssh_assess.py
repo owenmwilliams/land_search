@@ -6,8 +6,6 @@ from ssh.connect import ssh_postgres as sshp
 from ssh.connect import yaml_import as yaml
 import main
 
-# TODO: Update to call main.assess function on cluster or local...doc path should be cluster or local?
-
 def sa_assess(mode, doc_path):
     if mode == 'cluster':
         try:

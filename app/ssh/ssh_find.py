@@ -33,8 +33,6 @@ def sf_lucky(mode):
         except Exception as e:
             print('LAN cluster not found! Running locally. Error: %s' % e)
             main.find_lucky()
-    else:
-        main.find_lucky()
 
 def sf_state(mode, state):
     if mode == 'cluster':
@@ -73,5 +71,3 @@ def sf_state(mode, state):
         except Exception as e:
             print('LAN cluster not found! Running locally. Error: %s' % e)
             main.find_state(state)
-    else:
-        main.find_state(state)
