@@ -77,4 +77,17 @@ def assess(minimums, maximums, weights, radius):
     print('*****')
     print(top20)
     print('#####')
+
+def cluster_assess(min_pop, min_value, min_share, min_air, min_parks,\
+    max_pop, max_value, max_share, max_air, max_parks,\
+    weight_pop, weight_value, weight_share, weight_air, weight_parks,\
+    radius_air, radius_parks):
+    top20 = comp_assess.cluster(min_pop, min_value, min_share, min_air, min_parks,\
+    max_pop, max_value, max_share, max_air, max_parks,\
+    weight_pop, weight_value, weight_share, weight_air, weight_parks,\
+    radius_air, radius_parks)
+    print('*****')
+    print(top20)
+    print('#####')
+
 # # census_loop("census_table")

@@ -4,6 +4,7 @@ import paramiko
 import io
 from ssh.connect import ssh_postgres as sshp
 from ssh.connect import yaml_import as yaml
+from ssh.connect import yaml_unpack
 import main
 
 def sa_assess(mode, doc_path):
@@ -12,12 +13,13 @@ def sa_assess(mode, doc_path):
             version, transport, channel, stdin, stdout = sshp()
 
             minimums, maximums, weights, radius = yaml(doc_path)
+            pop_min, value_min, share_min, air_min, parks_min, pop_max, value_max, share_max, air_max, parks_max, pop_weight, value_weight, share_weight, air_weight, parks_weight, air_radius, parks_radius = yaml_unpack(minimums, maximums, weights, radius)
 
             stdin.write("""
             cd /opt/ls-cluster-{0}/models
-            python3 -c 'import main; x = main.assess({1}, {2}, {3}, {4}); print(x)'
+            python3 -c 'import main; x = main.cluster_assess({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}, {17}); print(x)'
             exit
-            """.format(version, minimums, maximums, weights, radius))
+            """.format(version, pop_min, value_min, share_min, air_min, parks_min, pop_max, value_max, share_max, air_max, parks_max, pop_weight, value_weight, share_weight, air_weight, parks_weight, air_radius, parks_radius))
 
             while True:
                 line = stdout.readline()

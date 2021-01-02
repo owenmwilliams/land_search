@@ -1,0 +1,25 @@
+---
+minimums:
+  pop: 0
+  value: 0
+  share: 0
+  air: 50000
+  parks: 15
+---
+maximums:
+  pop: 100000
+  value: 100000
+  share: 0.4
+  air: 100000000
+  parks: 500
+---
+weights:
+  pop: 0.1
+  value: 0.5
+  share: 0.2
+  air: 0.1
+  parks: 0.1
+---
+radius:
+  air: 2
+  parks: 6
