@@ -1,10 +1,15 @@
 import psycopg2
 import socket
+import os
+from dotenv import load_dotenv
 
 def con_cur():
     host = socket.gethostname()
+    load_dotenv()
+    version = os.getenv("version").replace('.','')
+
     if host == 'pi0':
-        db = "v004"
+        db = version
         port = "5432"
     else:
         db = "owenwilliams"

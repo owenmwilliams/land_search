@@ -12,12 +12,10 @@ pd.set_option('display.max_columns', None)
 
 def find_lucky():
     x = county_return.random_county()
-    # return x
     print(x)
 
 def find_state(state):
     array = county_return.state_search(state)
-    # return array
     print(array)
 
 def params_estimate(population, radius, cty_fips):
@@ -77,4 +75,15 @@ def assess(minimums, maximums, weights, radius):
     print('*****')
     print(top20)
     print('#####')
-# # census_loop("census_table")
+
+def cluster_assess(min_pop, min_value, min_share, min_air, min_parks,\
+    max_pop, max_value, max_share, max_air, max_parks,\
+    weight_pop, weight_value, weight_share, weight_air, weight_parks,\
+    radius_air, radius_parks):
+    top20 = comp_assess.cluster(min_pop, min_value, min_share, min_air, min_parks,\
+    max_pop, max_value, max_share, max_air, max_parks,\
+    weight_pop, weight_value, weight_share, weight_air, weight_parks,\
+    radius_air, radius_parks)
+    print('*****')
+    print(top20)
+    print('#####')

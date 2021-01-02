@@ -34,3 +34,10 @@ def yaml_import(doc_path):
             elif j == 'radius':
                 radius = k
     return minimums, maximums, weights, radius
+
+def yaml_unpack(minimums, maximums, weights, radius):
+    pop_min, value_min, share_min, air_min, parks_min = minimums['pop'], minimums['value'], minimums['share'], minimums['air'], minimums['parks']
+    pop_max, value_max, share_max, air_max, parks_max = maximums['pop'], maximums['value'], maximums['share'], maximums['air'], maximums['parks']
+    pop_weight, value_weight, share_weight, air_weight, parks_weight = weights['pop'], weights['value'], weights['share'], weights['air'], weights['parks']
+    air_radius, parks_radius = radius['air'], radius['parks']
+    return pop_min, value_min, share_min, air_min, parks_min, pop_max, value_max, share_max, air_max, parks_max, pop_weight, value_weight, share_weight, air_weight, parks_weight, air_radius, parks_radius
