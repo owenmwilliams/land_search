@@ -2,7 +2,6 @@
 import pandas as pd
 import paramiko
 
-
 def read_csv_sftp(hostname: str, username: str, remotepath: str, *args, **kwargs) -> pd.DataFrame:
     """
     Read a file from a remote host using SFTP over SSH.

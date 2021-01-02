@@ -44,7 +44,7 @@ def docopt_cmd(func):
     """
     def fn(self, arg):
         try:
-            opt = docopt(fn.__doc__, arg, version='v0.0.2')
+            opt = docopt(fn.__doc__, arg, version='v0.1.0')
 
         except DocoptExit as e:
             # The DocoptExit is thrown when the args do not match.
@@ -179,7 +179,6 @@ class MyInteractive (cmd.Cmd):
             -l                    Runs local
             --file=<doc_path>     Defines an input YAML file for variables. [default: /Users/owenwilliams/Projects/land_search/models/config/defaults.yaml]
         """
-        # if arg['--file'] == './est/calc/defaults.yaml':
         if arg['-l'] is False:
             sa.sa_assess('cluster', arg['--file'])
         else:

@@ -36,4 +36,5 @@ def sa_assess(mode, doc_path):
             channel.close()
         except Exception as e:
             print('LAN cluster not found! Running locally. Error: %s' % e)
-            main.assess(yaml(doc_path))
+            minimums, maximums, weights, radius = yaml(doc_path)
+            main.assess(minimums, maximums, weights, radius)
