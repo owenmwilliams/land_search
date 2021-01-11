@@ -1,4 +1,4 @@
-from dtl.api.dtl_census import st_fips_get, census_get_json
+from dtl.api.dtl_census import st_fips_get, census_get_json, census_get
 from datetime import date
 import os
 import json
@@ -22,15 +22,20 @@ def to_hdfs(api):
 def to_local(api):
     if api == "Census":
         state_list = st_fips_get()
-        date = date.today()
-        path = date.strftime("%Y-%m-%d")
+        print(state_list)
+        today = date.today()
+        path = today.strftime("%Y-%m-%d")
         for i in range(len(state_list)):
             record = state_list.iloc[i]
             state = record['state']
-            file_name = record['GEONAME']
-            file_name.rsplit(', ', 1)[1]
-            file_name.replace(" ", "_")
-            local_save('~/Projects/land_search/json/%s' % path, '%s.json' % file_name, census_get_json(state))
+            print(state)
+            file_name = record['NAME']
+            file_name = file_name.rsplit(', ', 1)[1]
+            file_name = file_name.replace(" ", "_")
+            print(file_name)
+            file_string = census_get(state)
+            print(file_string)
+            # local_save('~/Projects/land_search/json/%s' % path, '%s.json' % file_name, file_string)
     else:
         print('Other APIs links yet to be built.')
 
@@ -49,16 +54,16 @@ def local_mkdir(path_name):
         print('Directory already exists.')
 
 # Save JSON file to HDFS    
-def hdfs_save(path_name, file_name, file)
+def hdfs_save(path_name, file_name, file):
     try:
         hdfs_mkdir(path_name)
     finally:
-        os.system('echo "{0}" | hadoop fs -put - "{1}/{2}}"'.format(json.dump(file), path_name, file_name))
+        os.system('echo "{0}" | hadoop fs -put - "{1}/{2}}"'.format(file, path_name, file_name))
 
-def local_save(path_name, file_name, file)
+def local_save(path_name, file_name, file):
     try:
         local_mkdir(path_name)
     finally:
         file = open("{0}/{1}".format(path_name, file_name))
-        file.write(json.dump(file))
+        file.write(file)
         file.close()

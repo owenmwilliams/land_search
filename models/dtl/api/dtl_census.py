@@ -14,6 +14,7 @@ def census_get(st_fips):
     ins = {"state:%s" % st_fips}
     params = {"get":gets, "for":fors, "in":ins, "key":os.getenv("CENSUS_KEY")}
     response = requests.get('https://api.census.gov/data/2019/pep/charagegroups', params=params)
+    print(response.url)
     dat = response.json()
     return pd.read_json(json.dumps(dat))
 
@@ -24,7 +25,9 @@ def census_get_json(st_fips):
     ins = {"state:%s" % st_fips}
     params = {"get":gets, "for":fors, "in":ins, "key":os.getenv("CENSUS_KEY")}
     response = requests.get('https://api.census.gov/data/2019/pep/charagegroups', params=params)
+    print(response)
     dat = response.json()
+    print(json.dumps(dat))
     return json.dumps(dat)
 
 def st_fips_get():
