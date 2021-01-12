@@ -1,7 +1,8 @@
-from dtl.api.dtl_census import st_fips_get, census_get_json, census_get
+from dtl.api.dtl_census import st_fips_get, census_get
 from datetime import date
 import os
 import json
+from pathlib import Path
 
 # Getting input json into HDFS
 def to_hdfs(api):
@@ -12,7 +13,7 @@ def to_hdfs(api):
         for i in range(len(state_list)):
             record = state_list.iloc[i]
             state = record['state']
-            file_name = record['GEONAME']
+            file_name = record['NAME']
             file_name.rsplit(', ', 1)[1]
             file_name.replace(" ", "_")
             hdfs_save('/land_search/census/%s' % path, '%s.json' % file_name, census_get_json(state))
@@ -32,10 +33,43 @@ def to_local(api):
             file_name = record['NAME']
             file_name = file_name.rsplit(', ', 1)[1]
             file_name = file_name.replace(" ", "_")
+
+            outdir = '~/Projects/land_search/parquet/%s' % path
+            if not os.path.exists(outdir):
+                os.mkdir(outdir)
+            full_path = os.path.join(outdir, file_name)
             print(file_name)
-            file_string = census_get(state)
-            print(file_string)
+          
+            file_DF = census_get(state)
+            print(file_DF)
+           
+            file_DF.to_parquet(full_path)
             # local_save('~/Projects/land_search/json/%s' % path, '%s.json' % file_name, file_string)
+    else:
+        print('Other APIs links yet to be built.')
+
+def to_local_test(api):
+    if api == "Census":
+        state_list = st_fips_get()
+        today = date.today()
+        path = today.strftime("%Y-%m-%d")
+        for i in range(len(state_list)):
+            record = state_list.iloc[i]
+            state = record['state']
+            file_name = record['NAME']
+            file_name = file_name.rsplit(', ', 1)[1]
+            file_name = file_name.replace(" ", "_")
+
+            outdir = './file_test/%s' % path
+            if not os.path.exists(outdir):
+                Path(outdir).mkdir(parents=True, exist_ok=True)
+            full_path = os.path.join(outdir, file_name)
+            
+            if not os.path.exists(full_path):
+                file_DF = census_get(state)
+                
+                file_DF.to_parquet(full_path)
+                print('File saved: %s' % file_name)
     else:
         print('Other APIs links yet to be built.')
 
