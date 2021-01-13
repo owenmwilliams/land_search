@@ -6,6 +6,7 @@ Usage:
     land_search find_state [-l] <state>...
     land_search estimate [-l] (params [--radius=<deg> --pop=<percent>] | comps [--comps=<number>]) [-l] (<cty_fips>...)
     land_search search [-l] (simple [--value=<value> --share=<percent> --population=<pop>] | complex [--value=<value> --share=<percent> --population=<pop> --air_prox=<air> --parks_prox=<parks> --parks_num=<nparks>])
+    land_search hdfs <api>...
     land_search test <arguments>...
     land_search (-i | --interactive)
     land_search (-h | --help)
@@ -33,6 +34,7 @@ import ssh.ssh_find as sf
 import ssh.ssh_estimate as se
 import ssh.ssh_search as ss
 import ssh.ssh_assess as sa
+import ssh.ssh_hdfs as sh
 import ssh.connect as connect
 import main
 import pandas as pd
@@ -44,7 +46,7 @@ def docopt_cmd(func):
     """
     def fn(self, arg):
         try:
-            opt = docopt(fn.__doc__, arg, version='v0.1.0')
+            opt = docopt(fn.__doc__, arg, version='v0.1.2')
 
         except DocoptExit as e:
             # The DocoptExit is thrown when the args do not match.
@@ -184,6 +186,15 @@ class MyInteractive (cmd.Cmd):
         else:
             minimums, maximums, weights, radius = connect.yaml_import(arg['--file'])
             main.assess(minimums, maximums, weights, radius)
+
+    @docopt_cmd
+    def do_hdfs(self, arg):
+        """Usage: hdfs <api>..."""
+        for _ in range(len(arg['<api>'])):
+            if arg['api'][_]] == "Census-demo":
+                sh.sh_hdfs(arg['<api>'][_])
+            else:
+                print('API gateway not built yet.')
 
     @docopt_cmd
     def do_test(self, arg):

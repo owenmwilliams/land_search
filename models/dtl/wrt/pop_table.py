@@ -68,10 +68,6 @@ def app_pop(a, b):
 
 def census_loop(table_name):    
     x = st_fips_get()
-    new_header = x.iloc[0]
-    x = x[1:]
-    x.columns = new_header
-    x.drop_duplicates(subset=['state'], inplace=True)
     dup_x = x
     try:
         cur, con = con_cur()

@@ -3,6 +3,7 @@ import est.fltr.search as search
 import est.fltr.comps as comps
 import est.calc.constr as constr
 import est.calc.comp_assess as comp_assess
+import dtl.wrt.wrt_hdfs as wrt_hdfs
 from datetime import datetime
 import pandas as pd
 import os
@@ -87,3 +88,7 @@ def cluster_assess(min_pop, min_value, min_share, min_air, min_parks,\
     print('*****')
     print(top20)
     print('#####')
+
+def hdfs_dl(api_gateway):
+    wrt_hdfs(api_gateway)
+    print('Successfully updated %s' % api_gateway)
