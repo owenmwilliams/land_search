@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import paramiko
 import io
-from ssh.connect import ssh_postgres as sshp
+from ssh.connect import ssh_in
 from ssh.connect import yaml_import as yaml
 from ssh.connect import yaml_unpack
 import main
@@ -10,7 +10,7 @@ import main
 def sa_assess(mode, doc_path):
     if mode == 'cluster':
         try:
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
 
             minimums, maximums, weights, radius = yaml(doc_path)
             pop_min, value_min, share_min, air_min, parks_min, pop_max, value_max, share_max, air_max, parks_max, pop_weight, value_weight, share_weight, air_weight, parks_weight, air_radius, parks_radius = yaml_unpack(minimums, maximums, weights, radius)

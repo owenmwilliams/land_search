@@ -2,13 +2,13 @@ import os
 from dotenv import load_dotenv
 import paramiko
 import io
-from ssh.connect import ssh_postgres as sshp
+from ssh.connect import ssh_in
 import main
 
 def se_est_params(mode, pop, rad, fips):
     if mode == 'cluster':
         try:
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
 
             stdin.write("""
             cd /opt/ls-cluster-{0}/models
@@ -36,7 +36,7 @@ def se_est_params(mode, pop, rad, fips):
 def se_est_comps(mode, comps, fips):
     if mode == 'cluster':
         try:    
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
             
             stdin.write("""
             cd /opt/ls-cluster-{0}/models

@@ -24,10 +24,16 @@ def to_hdfs(api):
         elif api == "Census-time":
             hdfs_save('/ls_raw_dat/census_time/%s' % path, '%s' % file_name, cs.census_time_get(state))
         elif api == "Census-house":
-            hdfs_save('/ls_raw_dat/census_housing/%s' % path, '%s' % file_name, cs.census_housing_get(state))
+            try:
+                hdfs_save('/ls_raw_dat/census_housing/%s' % path, '%s' % file_name, cs.census_housing_get(state))
+            except:
+                print('*****')
+                print('Could not download state: %s' % file_name)
+                print('#####')                
         elif api == "National-parks":
             file_name = "National_parks"
             hdfs_save('/ls_raw_dat/national_parks/%s' % path, '%s' % file_name, np.parks_get())
+            break
         else:
             print('Other APIs links yet to be built.')
 
