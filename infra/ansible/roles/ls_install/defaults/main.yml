@@ -1,9 +1,9 @@
 ---
 # defaults file for postgresql
 
-ls_data_dir: "/opt/ls-cluster-v0.1.2"
-version: "v0.1.2"
-core_db: v012
+ls_data_dir: "/opt/ls-cluster-v0.1.3"
+version: "v0.1.3"
+core_db: v013
 ls_user: hduser
 ls_group: ls_group
 postgresql_data_dir: "/mnt/{{ fs_label }}/pgsql"

@@ -46,7 +46,7 @@ def docopt_cmd(func):
     """
     def fn(self, arg):
         try:
-            opt = docopt(fn.__doc__, arg, version='v0.1.2')
+            opt = docopt(fn.__doc__, arg, version='v0.1.3')
 
         except DocoptExit as e:
             # The DocoptExit is thrown when the args do not match.
@@ -187,14 +187,16 @@ class MyInteractive (cmd.Cmd):
             minimums, maximums, weights, radius = connect.yaml_import(arg['--file'])
             main.assess(minimums, maximums, weights, radius)
 
+# TODO: change to try, except once list of APIs gets longer
+
     @docopt_cmd
     def do_hdfs(self, arg):
         """Usage: hdfs <api>..."""
         for _ in range(len(arg['<api>'])):
-            if arg['api'][_]] == "Census-demo":
+            if arg['<api>'][_] == "Census-demo" or arg['<api>'][_] == "Census-time":
                 sh.sh_hdfs(arg['<api>'][_])
             else:
-                print('API gateway not built yet.')
+                print('API gateway does not exist or not yet built.')
 
     @docopt_cmd
     def do_test(self, arg):

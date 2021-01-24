@@ -8,7 +8,7 @@ def parks_get():
     load_dotenv()
     endpoint = "https://developer.nps.gov/api/v1/parks"
     HEADERS = {"X-Api-Key": os.getenv("DATAGOV_KEY")}
-    params = {"limit":"500"}
+    params = {"limit":"1000"}
     response = requests.get(endpoint, params = params, headers=HEADERS)
     d = response.json()
     parks_data = pd.json_normalize(d['data'])

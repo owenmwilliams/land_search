@@ -15,6 +15,8 @@ def sh_hdfs(api_gateway):
         python3 -c 'import main; x = main.hdfs_dl({1}); print(x)'
         exit
         """.format(version, api_gateway))
+        x = stdout.read()
+        print(x)
 
     except Exception as e:
         print('An error occured downloading the files from API: %s' % e)
