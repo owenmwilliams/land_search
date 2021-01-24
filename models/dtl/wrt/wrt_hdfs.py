@@ -1,4 +1,5 @@
-from dtl.api.dtl_census import st_fips_get, census_get
+import dtl.api.dtl_census as cs
+import dtl.api.dtl_parks as np
 from datetime import date
 import os
 import json
@@ -9,7 +10,7 @@ from dotenv import load_dotenv
 
 # Getting input from API into parquet on HDFS
 def to_hdfs(api):
-    state_list = st_fips_get()
+    state_list = cs.st_fips_get()
     today = date.today()
     path = today.strftime("%Y-%m-%d")
     for i in range(len(state_list)):
@@ -19,17 +20,20 @@ def to_hdfs(api):
         file_name = file_name.rsplit(', ', 1)[1]
         file_name = file_name.replace(" ", "_")
         if api == "Census-demo":
-            hdfs_save('/ls_raw_dat/census_demo/%s' % path, '%s' % file_name, census_get(state))
+            hdfs_save('/ls_raw_dat/census_demo/%s' % path, '%s' % file_name, cs.census_get(state))
         elif api == "Census-time":
-            hdfs_save('/ls_raw_dat/census_time/%s' % path, '%s' % file_name, census_time_get(state))
+            hdfs_save('/ls_raw_dat/census_time/%s' % path, '%s' % file_name, cs.census_time_get(state))
         elif api == "Census-house":
-            hdfs_save('/ls_raw_dat/census_housing/%s' % path, '%s' % file_name, census_housing_get(state))
+            hdfs_save('/ls_raw_dat/census_housing/%s' % path, '%s' % file_name, cs.census_housing_get(state))
+        elif api == "National-parks":
+            file_name = "National_parks"
+            hdfs_save('/ls_raw_dat/national_parks/%s' % path, '%s' % file_name, np.parks_get())
         else:
             print('Other APIs links yet to be built.')
 
 def to_local(api):
     if api == "Census-demo":
-        state_list = st_fips_get()
+        state_list = cs.st_fips_get()
         today = date.today()
         path = today.strftime("%Y-%m-%d")
         for i in range(len(state_list)):
@@ -45,7 +49,7 @@ def to_local(api):
             full_path = os.path.join(outdir, file_name)
             
             if not os.path.exists(full_path):
-                file_DF = census_get(state)
+                file_DF = cs.census_get(state)
                 
                 file_DF.to_parquet(full_path)
                 print('File saved: %s' % file_name)
