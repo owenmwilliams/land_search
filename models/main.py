@@ -90,5 +90,5 @@ def cluster_assess(min_pop, min_value, min_share, min_air, min_parks,\
     print('#####')
 
 def hdfs_dl(api_gateway):
-    wrt_hdfs(api_gateway)
+    wrt_hdfs.to_hdfs(api_gateway)
     print('Successfully updated %s' % api_gateway)

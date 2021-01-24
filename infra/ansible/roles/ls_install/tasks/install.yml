@@ -29,15 +29,15 @@
     state: directory
     mode: 0777
 
-- name: "[LANDSEARCH] Git checkout"
-  git:
-    repo: 'https://github.com/owenmwilliams/land_search'
-    dest: "{{ ls_data_dir }}"
-    version: "{{ version }}"
+# - name: "[LANDSEARCH] Git checkout"
+#   git:
+#     repo: 'https://github.com/owenmwilliams/land_search'
+#     dest: "{{ ls_data_dir }}"
+#     version: "{{ version }}"
 
-- name: "[LANDSEARCH] Install libgdal-dev, libffi-dev"
+- name: "[LANDSEARCH] Install required dev packages"
   apt:
-    name: ['libgdal-dev', 'libffi-dev']
+    name: ['libgdal-dev', 'libffi-dev', 'libparquet-dev', 'libutf8proc-dev', 'libbz2-dev', 'liblz4-dev', 'libbrotli-dev', 'libsnappy-dev']
     state: latest
 
 - name: "[LANDSEARCH] Ensure ~/.bashrc for {{ ls_user }} exports LSHOME"
@@ -54,4 +54,11 @@
 - name: "[LANDSEARCH] Install specified python requirements"
   pip:
     requirements: "{{ ls_data_dir }}/requirements.txt"
-    
+    extra_args: "--no-cache-dir --force-reinstall"
+  environment: 
+    PYARROW_CMAKE_OPTIONS: "-DARROW_ARMV8_ARCH=armv8-a -DCMAKE_INSTALL_PREFIX=$ARROW_HOME -DCMAKE_INSTALL_LIBDIR=lib -DARROW_PARQUET=ON -DARROW_HDFS=ON -DARROW_PYTHON=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_BZ2=ON"
+    PYARROW_WITH_PARQUET: 1
+    PYARROW_WITH_HDFS: 1
+    ARROW_HOME: "/usr"
+    ARROW_LIBHDFS_DIR: "/opt/hadoop-3.3.0/lib/native"
+    JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-arm64/jre"

@@ -191,7 +191,7 @@ class MyInteractive (cmd.Cmd):
     def do_hdfs(self, arg):
         """Usage: hdfs <api>..."""
         for _ in range(len(arg['<api>'])):
-            if arg['api'][_]] == "Census-demo":
+            if arg['<api>'][_] == "Census-demo":
                 sh.sh_hdfs(arg['<api>'][_])
             else:
                 print('API gateway not built yet.')
