@@ -29,11 +29,11 @@
     state: directory
     mode: 0777
 
-# - name: "[LANDSEARCH] Git checkout"
-#   git:
-#     repo: 'https://github.com/owenmwilliams/land_search'
-#     dest: "{{ ls_data_dir }}"
-#     version: "{{ version }}"
+- name: "[LANDSEARCH] Git checkout"
+  git:
+    repo: 'https://github.com/owenmwilliams/land_search'
+    dest: "{{ ls_data_dir }}"
+    version: "{{ version }}"
 
 - name: "[LANDSEARCH] Install required dev packages"
   apt:
@@ -54,7 +54,7 @@
 - name: "[LANDSEARCH] Install specified python requirements"
   pip:
     requirements: "{{ ls_data_dir }}/requirements.txt"
-    extra_args: "--no-cache-dir --force-reinstall"
+    extra_args: "--no-cache-dir"
   environment: 
     PYARROW_CMAKE_OPTIONS: "-DARROW_ARMV8_ARCH=armv8-a -DCMAKE_INSTALL_PREFIX=$ARROW_HOME -DCMAKE_INSTALL_LIBDIR=lib -DARROW_PARQUET=ON -DARROW_HDFS=ON -DARROW_PYTHON=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_BZ2=ON"
     PYARROW_WITH_PARQUET: 1
