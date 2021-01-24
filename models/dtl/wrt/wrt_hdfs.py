@@ -19,8 +19,32 @@ def to_hdfs(api):
             file_name = record['NAME']
             file_name = file_name.rsplit(', ', 1)[1]
             file_name = file_name.replace(" ", "_")
-            
             hdfs_save('/ls_raw_dat/census_demo/%s' % path, '%s' % file_name, census_get(state))
+    
+    elif api == "Census-time":
+        state_list = st_fips_get()
+        today = date.today()
+        path = today.strftime("%Y-%m-%d")
+        for i in range(len(state_list)):
+            record = state_list.iloc[i]
+            state = record['state']
+            file_name = record['NAME']
+            file_name = file_name.rsplit(', ', 1)[1]
+            file_name = file_name.replace(" ", "_")        
+            hdfs_save('/ls_raw_dat/census_time/%s' % path, '%s' % file_name, census_time_get(state))
+
+    elif api == "Census-house":
+        state_list = st_fips_get()
+        today = date.today()
+        path = today.strftime("%Y-%m-%d")
+        for i in range(len(state_list)):
+            record = state_list.iloc[i]
+            state = record['state']
+            file_name = record['NAME']
+            file_name = file_name.rsplit(', ', 1)[1]
+            file_name = file_name.replace(" ", "_")        
+            hdfs_save('/ls_raw_dat/census_housing/%s' % path, '%s' % file_name, census_housing_get(state))
+
     else:
         print('Other APIs links yet to be built.')
 
