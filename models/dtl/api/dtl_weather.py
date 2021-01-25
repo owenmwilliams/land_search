@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 # Returns XXX weather data for counties in a state
-
+pd.set_option('display.max_rows', None)
 def weather_get():
     load_dotenv()
     
@@ -15,11 +15,18 @@ def weather_get():
     data = "TMAX,TMIN,TAVG,PRCP,SNOW,AWND"
     params = {"limit":"1000", "datasetid":"GHCND", "datatypeid":data, "locationid":location, "startdate":start, "enddate":end}
     response = requests.get(endpoint, params = params, headers=HEADERS)
-    print(response.text)
-    print(response.status_code)
+    # print(response.text)
+    # print(response.status_code)
     d = response.json()
-    text = json.dumps(d, sort_keys=True, indent=4)
-    print(text)
+    pDF = pd.json_normalize(d['results']).drop(columns=['attributes']).set_index(['date','station','datatype'])
+    print(pDF)
+    # columns = pd.Index(['date', 'station'], name = 'item')
+    # pDF = pDF.reindex(columns = columns)
+    piv_pDF = pDF.unstack('datatype')
+    print(piv_pDF)
+    # print(pDF.unstack('datatype'))
+    # text = json.dumps(d, sort_keys=True, indent=4)
+    # print(text)
 
 def weather_data_get():
     load_dotenv()
