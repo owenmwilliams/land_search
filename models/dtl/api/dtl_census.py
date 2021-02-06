@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from urllib.parse import urlparse
 
 # Returns county population and demographics data from Census 
-# TODO: condense census get functions to return pDF or JSON
 
 def census_get(st_fips):
     load_dotenv()
