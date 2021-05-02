@@ -4,12 +4,12 @@ import paramiko
 import time
 import io
 import main
-from ssh.connect import ssh_postgres as sshp
+from ssh.connect import ssh_in
 
 def sf_lucky(mode):
     if mode == 'cluster':
         try:
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
 
             stdin.write("""
             cd /opt/ls-cluster-{0}/models
@@ -37,7 +37,7 @@ def sf_lucky(mode):
 def sf_state(mode, state):
     if mode == 'cluster':
         try:
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
 
             stdin.write("""
             cd /opt/ls-cluster-{0}/models

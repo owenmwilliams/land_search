@@ -3,13 +3,13 @@ from dotenv import load_dotenv
 import paramiko
 import time
 import io
-from ssh.connect import ssh_postgres as sshp
+from ssh.connect import ssh_in
 import main
 
 def ss_search_simple(mode, value, share, pop):
     if mode == 'cluster':
         try:
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
 
             stdin.write("""
             cd /opt/ls-cluster-{0}/models
@@ -37,7 +37,7 @@ def ss_search_simple(mode, value, share, pop):
 def ss_search_complex(mode, value, share, pop, air_prox, parks_prox, parks_num):
     if mode == 'cluster':
         try:
-            version, transport, channel, stdin, stdout = sshp()
+            version, transport, channel, stdin, stdout = ssh_in('postgres')
             
             stdin.write("""
             cd /opt/ls-cluster-{0}/models

@@ -1,6 +1,6 @@
 ---
 # defaults file for spark
-spark_version: 3.0.1
+spark_version: 3.0.2
 spark_user: hduser
 spark_group: hadoop
 spark_standalone_cluster: false
