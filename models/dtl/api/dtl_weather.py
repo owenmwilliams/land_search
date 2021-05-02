@@ -29,6 +29,7 @@ def num_records(cty_fips, yr):
 
 # Returns XXX weather data for counties in a state
 pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
 def weather_get():
     load_dotenv()
     
@@ -41,10 +42,11 @@ def weather_get():
     params = {"limit":"1000", "datasetid":"GHCND", "datatypeid":data, "locationid":location, "startdate":start, "enddate":end}
     response = requests.get(endpoint, params = params, headers=HEADERS)
     d = response.json()
-    pDF = pd.json_normalize(d['results']).drop(columns=['attributes']).set_index(['date','station','datatype'])
+    pDF = pd.json_normalize(d['results']).drop(columns=['attributes'])#.set_index(['date','station','datatype'])
     print(pDF)
-    piv_pDF = pDF.unstack('datatype')
-    print(piv_pDF)
+    piv_pDF = pDF.pivot(index=['date', 'station'], columns='datatype', values='value')
+    # piv_pDF = pDF.unstack('datatype').reset_index(level='station', col_level=1).reset_index(level='date', col_level=1)
+    return piv_pDF
 
 
 
