@@ -35,10 +35,10 @@
     dest: "{{ ls_data_dir }}"
     version: "{{ version }}"
 
-- name: "[LANDSEARCH] Install required dev packages"
-  apt:
-    name: ['libgdal-dev', 'libffi-dev', 'libparquet-dev', 'libutf8proc-dev', 'libbz2-dev', 'liblz4-dev', 'libbrotli-dev', 'libsnappy-dev']
-    state: latest
+# - name: "[LANDSEARCH] Install required dev packages"
+#   apt:
+#     name: ['libgdal-dev', 'libffi-dev', 'libparquet-dev', 'libutf8proc-dev', 'libbz2-dev', 'liblz4-dev', 'libbrotli-dev', 'libsnappy-dev']
+#     state: latest
 
 - name: "[LANDSEARCH] Ensure ~/.bashrc for {{ ls_user }} exports LSHOME"
   lineinfile:
