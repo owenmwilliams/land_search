@@ -35,11 +35,11 @@
   roles:
     - ssd
 
-# - hosts: postgresql
-#   become: yes
-#   become_user: root
-#   roles:
-#     - postgresql
+- hosts: postgresql
+  become: yes
+  become_user: root
+  roles:
+    - postgresql
 
 - hosts: ls_install
   become: yes
