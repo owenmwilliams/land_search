@@ -1,6 +1,7 @@
 from urllib.request import Request, urlopen
 import ssl
 from bs4 import BeautifulSoup
+import re
 
 context = ssl._create_unverified_context()
 url = Request("https://www.landsofamerica.com/Pulaski-County-KY/all-land/no-house/", headers={'User-Agent': 'Mozilla/5.0'})
@@ -17,5 +18,8 @@ for i in soup.find_all('span', {'class':'_32f8d'}):
 for i in soup.find_all('span', {'class':'_1a278'}):
     print(i.get_text().strip())
 
-# for i in soup.find_all('span', {'class':'title'}):
-#     print(i.get_text().strip())
+for i in soup.find_all("span"):
+    if i.get('title') is not None:
+        print(i.get('title'))
+
+    # title=re.compile("RAM")).text
