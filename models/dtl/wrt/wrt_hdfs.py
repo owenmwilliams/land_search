@@ -65,10 +65,14 @@ def to_local(api):
 # Save parquet file to HDFS    
 def hdfs_save_arrow(path_name, file_name, pDF):
     os.system('hadoop fs -mkdir -p "{0}"'.format(path_name))
+    print(pDF)
     aDF = pa.Table.from_pandas(pDF)
-    fs = pa.hdfs.connect(host="pi0", port=54310)
-    with fs.open('{0}/{1}'.format(path_name, file_name)) as fw:
-        pq.write_table(aDF, fw)
+    print('{0}/{1}'.format(path_name, file_name))
+    hdfs = fs.HadoopFileSystem(host="pi0", port=54310, user=hduser)
+    with hdfs.open_output_stream('{0}/{1}.parquet'.format(path_name, file_name), "wb") as fw:
+        pq.write_table(aDF, fw)      
+    # pq.write_to_dataset(aDF, '{0}/{1}'.format(path_name, file_name), filesystem=hdfs)
+    pq.write_table(aDF, '{0}/{1}'.format(path_name, file_name), filesystem=hdfs)
 
 # Workaround - save locally, then put to HDFS    
 def hdfs_save(path_name, file_name, pDF):
