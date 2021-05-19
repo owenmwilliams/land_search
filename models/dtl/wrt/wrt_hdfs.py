@@ -2,7 +2,6 @@ import dtl.api.dtl_census as cs
 import dtl.api.dtl_parks as np
 from datetime import date
 import os
-import json
 from pathlib import Path
 from pyarrow import parquet as pq
 import pyarrow as pa
@@ -74,7 +73,7 @@ def hdfs_save_arrow(path_name, file_name, pDF):
     # pq.write_to_dataset(aDF, '{0}/{1}'.format(path_name, file_name), filesystem=hdfs)
     pq.write_table(aDF, '{0}/{1}'.format(path_name, file_name), filesystem=hdfs)
 
-# Workaround - save locally, then put to HDFS    
+# Workaround - save locally, then put to HDFS; TODO - delete local file 
 def hdfs_save(path_name, file_name, pDF):
     load_dotenv()
     ls_home = '{0}/{1}'.format(os.getenv("LSHOME"), path_name)
