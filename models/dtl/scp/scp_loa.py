@@ -1,17 +1,13 @@
 from urllib.request import Request, urlopen
+import dtl.wrt.wrt_hdfs as sv
 import ssl
 from bs4 import BeautifulSoup
+from datetime import date
 import re
 from est.db.cur import con_cur
 import pandas as pd
 
-# #Need full set of counties & states
-# cur, con = con_cur()
-# cur.execute("""
-#                 SELECT DISTINCT county, usps FROM countylatlong
-#             """)
-# cty_array = pd.DataFrame(cur.fetchall(), columns = ['County','State'])
-# con.close()
+
 
 # #Build url addendum
 # cty_list = []
@@ -28,6 +24,29 @@ import pandas as pd
 #     page = urlopen(url, context=context)
 #     html = page.read().decode("utf-8")
 #     soup = BeautifulSoup(html, "html.parser")
+
+#Return a dataframe with each county and state
+def fnd_cty(): 
+    cur, con = con_cur()
+    cur.execute("""
+                    SELECT DISTINCT county, usps FROM countylatlong
+                """)
+    cty_array = pd.DataFrame(cur.fetchall(), columns = ['County','State'])
+    con.close()
+    return cty_array
+
+def scp_iter():
+    cty_array = fnd_cty()
+    for i in range(len(cty_array)):
+        try:
+            pDF = scp_loa_cty(cty_array['County'][i], cty_array['State'][i])
+            today = date.today()
+            path = '{0}/{1}'.format(today.strftime("%Y-%m-%d"), cty_array['State'][i]).replace(' ', '_')
+            file_name = cty_array['County'][i].replace(' ', '_')
+            print(path, '...', file_name)
+            sv('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
+        except:
+            pass
 
 #Takes county name and state abbreviation and returns dataframe with acreage, cost, and location
 def scp_loa_cty(county, state):

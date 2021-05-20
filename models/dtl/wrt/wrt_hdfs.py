@@ -85,3 +85,4 @@ def hdfs_save(path_name, file_name, pDF):
 
     os.system('hadoop fs -mkdir -p "{0}"'.format(path_name))
     os.system('hadoop fs -put {0} {1}/{2}'.format(full_path, path_name, file_name))
+    os.system('rm -r {0}'.format(full_path))
