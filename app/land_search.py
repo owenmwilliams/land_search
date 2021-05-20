@@ -46,7 +46,7 @@ def docopt_cmd(func):
     """
     def fn(self, arg):
         try:
-            opt = docopt(fn.__doc__, arg, version='v0.1.4')
+            opt = docopt(fn.__doc__, arg, version='v0.1.5')
 
         except DocoptExit as e:
             # The DocoptExit is thrown when the args do not match.
