@@ -2,7 +2,6 @@ import dtl.api.dtl_census as cs
 import dtl.api.dtl_parks as np
 from datetime import date
 import os
-import json
 from pathlib import Path
 from pyarrow import parquet as pq
 import pyarrow as pa
@@ -65,12 +64,16 @@ def to_local(api):
 # Save parquet file to HDFS    
 def hdfs_save_arrow(path_name, file_name, pDF):
     os.system('hadoop fs -mkdir -p "{0}"'.format(path_name))
+    print(pDF)
     aDF = pa.Table.from_pandas(pDF)
-    fs = pa.hdfs.connect(host="pi0", port=54310)
-    with fs.open('{0}/{1}'.format(path_name, file_name)) as fw:
-        pq.write_table(aDF, fw)
+    print('{0}/{1}'.format(path_name, file_name))
+    hdfs = fs.HadoopFileSystem(host="pi0", port=54310, user=hduser)
+    with hdfs.open_output_stream('{0}/{1}.parquet'.format(path_name, file_name), "wb") as fw:
+        pq.write_table(aDF, fw)      
+    # pq.write_to_dataset(aDF, '{0}/{1}'.format(path_name, file_name), filesystem=hdfs)
+    pq.write_table(aDF, '{0}/{1}'.format(path_name, file_name), filesystem=hdfs)
 
-# Workaround - save locally, then put to HDFS    
+# Workaround - save locally, then put to HDFS; TODO - delete local file 
 def hdfs_save(path_name, file_name, pDF):
     load_dotenv()
     ls_home = '{0}/{1}'.format(os.getenv("LSHOME"), path_name)
@@ -82,3 +85,4 @@ def hdfs_save(path_name, file_name, pDF):
 
     os.system('hadoop fs -mkdir -p "{0}"'.format(path_name))
     os.system('hadoop fs -put {0} {1}/{2}'.format(full_path, path_name, file_name))
+    os.system('rm -r {0}'.format(full_path))
