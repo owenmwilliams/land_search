@@ -1,5 +1,5 @@
 from urllib.request import Request, urlopen
-import dtl.wrt.wrt_hdfs as sv
+from dtl.wrt.wrt_hdfs import hdfs_save as sv
 import ssl
 from bs4 import BeautifulSoup
 from datetime import date
