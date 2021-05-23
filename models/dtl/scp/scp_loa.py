@@ -1,12 +1,12 @@
 from urllib.request import Request, urlopen
-from dtl.wrt.wrt_hdfs import hdfs_save as sv
 import ssl
 from bs4 import BeautifulSoup
 from datetime import date
 import re
 from est.db.cur import con_cur
 import pandas as pd
-
+import os
+from fp.fp import FreeProxy
 
 
 # #Build url addendum
@@ -35,6 +35,7 @@ def fnd_cty():
     con.close()
     return cty_array
 
+#TODO: add a 'if file exists or was recently downloaded, skip' and IP rotator, set random intervals between requests
 def scp_iter():
     cty_array = fnd_cty()
     for i in range(len(cty_array)):
@@ -45,11 +46,12 @@ def scp_iter():
             file_name = cty_array['County'][i].replace(' ', '_')
             print(path, '...', file_name)
             sv('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
-        except:
+        except Exception as e:
+            print(e)
             pass
 
 #Takes county name and state abbreviation and returns dataframe with acreage, cost, and location
-def scp_loa_cty(county, state):
+def scp_loa_cty(county, state):    
     #set up lists
     prc = []
     acr = []
@@ -60,9 +62,13 @@ def scp_loa_cty(county, state):
     #url string
     cty_url = '{0}-{1}'.format(county, state).replace(' ', '-')
     
+    #get a proxy
+    proxy = FreeProxy(rand=True).get()
+
     #connect to first page
     context = ssl._create_unverified_context()
     url = Request("https://www.landsofamerica.com/{0}/all-land/no-house/".format(cty_url), headers={'User-Agent': 'Mozilla/5.0'})
+    url.set_proxy(proxy, "https")
     page = urlopen(url, context=context)
     html = page.read().decode("utf-8")
     soup = BeautifulSoup(html, "html.parser")
@@ -91,6 +97,7 @@ def scp_loa_cty(county, state):
     while k <= max(page_num):
         context = ssl._create_unverified_context()
         url = Request("https://www.landsofamerica.com/{0}/all-land/no-house/page-{1}".format(cty_url, k), headers={'User-Agent': 'Mozilla/5.0'})
+        url.set_proxy(proxy, "https")
         page = urlopen(url, context=context)
         html = page.read().decode("utf-8")
         soup = BeautifulSoup(html, "html.parser")
