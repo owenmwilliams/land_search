@@ -1,4 +1,4 @@
-from urllib.request import Request, urlopen
+import dtl.wrt.wrt_hdfs as sv
 import ssl
 from bs4 import BeautifulSoup
 from datetime import date
@@ -7,6 +7,7 @@ from est.db.cur import con_cur
 import pandas as pd
 import os
 from fp.fp import FreeProxy
+import requests
 
 
 # #Build url addendum
@@ -75,6 +76,7 @@ def scp_loa_cty(county, state):
     
     #append first page data
     for i in soup.find_all('span', {'class':'_32f8d'}):
+        #IF i.parent <> something with recommended similar properties
         prc.append(i.get_text().strip())
         cty.append(county)
         st.append(state)
