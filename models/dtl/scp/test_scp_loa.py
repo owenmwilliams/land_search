@@ -10,6 +10,7 @@ import proxyscrape
 def scp_iter():
     collector = proxyscrape.create_collector('my-collector', 'https')
     cty_array = fnd_cty()
+    cty_array = cty_array.sample(frac=1)
     for i in range(len(cty_array)):
         try:
             pDF = scp_loa_cty(cty_array['County'][i], cty_array['State'][i])
@@ -18,13 +19,14 @@ def scp_iter():
             path = '{0}/{1}'.format(today.strftime("%Y-%m-%d"), cty_array['State'][i]).replace(' ', '_')
             file_name = cty_array['County'][i].replace(' ', '_')
             print(path, '...', file_name)
-            sv.wrt_hdfs('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
+            sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
         except Exception as e:
             print(e)
             pass
 
 #Takes county name and state abbreviation and returns dataframe with acreage, cost, and location
-def scp_loa_cty(county, state):    
+def scp_loa_cty(county, state):
+    collector = proxyscrape.create_collector('my-collector', 'https')
     #set up lists
     prc = []
     acr = []
@@ -45,7 +47,7 @@ def scp_loa_cty(county, state):
     st.extend(st1)
     
     for i in range(total_pages - 1):
-        cty_url = build_url(county, state, i+1)
+        cty_url = build_url(county, state, i+2)
         pg_text = get_page_text(cty_url, proxy)
         prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
         prc.extend(prcn)
@@ -67,15 +69,16 @@ def pg_parse(html, county, state):
     cty = []
     st = []
     soup = BeautifulSoup(html, "html.parser")
-    for i in soup.find_all('span', {'class':'_32f8d'}):
-        prc.append(i.get_text().strip())
-        cty.append(county)
-        st.append(state)
-    for i in soup.find_all('span', {'class':'_1a278'}):
-        acr.append(i.get_text().strip())
-    for i in soup.find_all("span"):
-        if i.get('title') is not None:
-            loc.append(i.get('title'))
+    for div in soup.find_all('div', {'class':'_4d28e c2799'}):
+        for span in div.find_all('span', {'class':'_32f8d'}):
+            prc.append(span.get_text().strip())
+            cty.append(county)
+            st.append(state)
+        for span in div.find_all('span', {'class':'_1a278'}):
+            acr.append(span.get_text().strip())
+        for span in div.find_all("span"):
+            if span.get('title') is not None:
+                loc.append(span.get('title'))
     return prc, acr, loc, cty, st
 
 def get_https_proxy(collector):   
@@ -85,7 +88,7 @@ def get_https_proxy(collector):
 
 def get_page_text(url, proxies):
     headers={'User-Agent': 'Mozilla/5.0'}
-    html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=2.0)
+    html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=10.0)
     return html.text
 
 def proxy_iterate(url):
@@ -108,7 +111,10 @@ def find_page_num(html):
             page_num.append(int(i.get_text().strip()))
         except:
             pass
-    return max(page_num)
+    if len(page_num) > 1:
+        return max(page_num)
+    else:
+        return 1
 
 def build_url(county, state, page):
     cty_url = '{0}-{1}'.format(county, state).replace(' ', '-')
