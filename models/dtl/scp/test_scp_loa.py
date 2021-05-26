@@ -48,7 +48,10 @@ def scp_loa_cty(county, state):
     
     for i in range(total_pages - 1):
         cty_url = build_url(county, state, i+2)
-        pg_text = get_page_text(cty_url, proxy)
+        try:
+            pg_text = get_page_text(cty_url, proxy)
+        except:
+            pg_text, proxy = proxy_iterate(cty_url)
         prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
         prc.extend(prcn)
         acr.extend(acrn)
@@ -89,8 +92,19 @@ def get_https_proxy(collector):
 def get_page_text(url, proxies):
     headers={'User-Agent': 'Mozilla/5.0'}
     html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=10.0)
-    return html.text
+    if html.status_code == 200:
+        expected_length = html.headers.get('Content-Length')
+        if expected_length is not None:
+            actual_length = html.raw.tell()
+            expected_length = int(expected_length)
+            if actual_length == expected_length:
+                return html.text
+            else:
+                raise IOError('incomplete read')
+    else:
+        raise IOError('access denied')
 
+#SOMETIMES THIS RETURNS AN EMPTY HTML OR AT LEAST AN INCOMPLETE ONE >>> This is because it returns access denied HTML
 def proxy_iterate(url):
     while True:
         collector = proxyscrape.get_collector('my-collector')
