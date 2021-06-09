@@ -1,3 +1,4 @@
+from socket import error
 import dtl.wrt.wrt_hdfs as sv
 from bs4 import BeautifulSoup
 from datetime import date
@@ -8,6 +9,26 @@ import proxyscrape
 import subprocess
 import re
 
+class Error(Exception):
+    """Base class for other exceptions"""
+    pass
+
+class PageNotExistError(Error):
+    """Raised when the page does not exist"""
+    pass
+
+class MaxRetriesError(Error):
+    """Raised when multiple retries have failed"""
+    pass
+
+class IncompleteReadError(Error):
+    """Raised when page was not fully retrieved"""
+    pass
+
+class OtherHTTPError(Error):
+    """Raised when multiple retries have failed"""
+    pass
+
 #TODO: add a 'if file exists or was recently downloaded, skip' and IP rotator, set random intervals between requests
 def scp_iter():
     collector = proxyscrape.create_collector('my-collector', 'https')
@@ -15,7 +36,9 @@ def scp_iter():
     exist_cty_array = existing_cty()
     ret_cty = pd.merge(cty_array, exist_cty_array, indicator=True, how='outer').query('_merge=="left_only"').drop('_merge', axis=1)
     ret_cty.drop_duplicates(inplace=True)
-#    cty_array = cty_array.sample(frac=1).reset_index(drop=True)
+    ret_cty = ret_cty.sample(frac=1).reset_index(drop=True)
+    print("Counties already downloaded: {0}".format(len(cty_array)-len(ret_cty)))
+    print("Counties to attempt: {0}".format(len(ret_cty)))
     for i in range(len(ret_cty)):
         try:
             pDF = scp_loa_cty(ret_cty['County'][i], ret_cty['State'][i])
@@ -25,12 +48,13 @@ def scp_iter():
             file_name = ret_cty['County'][i].replace(' ', '_')
             print(path, '...', file_name)
             sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
-        except ConnectionAbortedError as err:
+        except PageNotExistError as err:
             print('Handling error:', err, '. Skipping to next county.')
             pass
-        except Exception as e:
-            print(e)
+        except OtherHTTPError as err:
+            print('Handling error:', err, '. Skipping to next county.')
             pass
+
 
 #Takes county name and state abbreviation and returns dataframe with acreage, cost, and location
 def scp_loa_cty(county, state):
@@ -51,8 +75,10 @@ def scp_loa_cty(county, state):
     cty_url_1 = build_url(county, state, 1)
     try:
         pg1_text, proxy = proxy_iterate(cty_url_1)
-    except ConnectionAbortedError as err:
-        return err      
+    except PageNotExistError as err:
+        raise
+    else:
+        pg1_text, proxy = proxy_iterate(cty_url_1)
     total_pages = find_page_num(pg1_text)
     prc1, acr1, loc1, cty1, st1 = pg_parse(pg1_text, county, state)
 
@@ -62,27 +88,49 @@ def scp_loa_cty(county, state):
     cty.extend(cty1)
     st.extend(st1)
     
+    tries = 0
+
     for i in range(total_pages - 1):
         cty_url = build_url(county, state, i+2)
         try:
             pg_text = get_page_text(cty_url, proxy)
-        except ConnectionAbortedError as err:
-            return err
-        except:
-            pg_text, proxy = proxy_iterate(cty_url)
-        prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
-        prc.extend(prcn)
-        acr.extend(acrn)
-        loc.extend(locn)
-        cty.extend(ctyn)
-        st.extend(stn)
+            prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
+            prc.extend(prcn)
+            acr.extend(acrn)
+            loc.extend(locn)
+            cty.extend(ctyn)
+            st.extend(stn)
+        except (PageNotExistError, OtherHTTPError) as err:
+            print('Raising error: {0}'.format(err))
+            raise err
+        except IncompleteReadError():
+            pg_text = get_page_text(cty_url, proxy)
+            prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
+            prc.extend(prcn)
+            acr.extend(acrn)
+            loc.extend(locn)
+            cty.extend(ctyn)
+            st.extend(stn)            
+        else:
+            if tries <= 10:
+                print('Try number: {0}'.format(tries))
+                tries = tries + 1
+                pg_text, proxy = proxy_iterate(cty_url)
+                pg_text = get_page_text(cty_url, proxy)
+                prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
+                prc.extend(prcn)
+                acr.extend(acrn)
+                loc.extend(locn)
+                cty.extend(ctyn)
+                st.extend(stn)
+            else:
+                raise MaxRetriesError('Exceeded max tries.')
 
     df = pd.DataFrame(list(zip(prc, acr, loc, cty, st)), columns = ['Price', 'Acreage', 'Location', 'County', 'State'])
     pd.set_option("max_rows", None)
     pd.set_option("max_columns", None)
     pd.set_option ("max_colwidth", 30)
     return df  
-
 
 def pg_parse(html, county, state):
     prc = []
@@ -110,10 +158,12 @@ def get_https_proxy(collector):
 
 #TODO - need to add a catch if the county cannot be found (http 404), or else continuously tries through proxy
 def get_page_text(url, proxies):
+    s = requests.session()
+    s.keep_alive = False
     headers={'User-Agent': 'Mozilla/5.0'}
-    html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=10.0)
+    html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=20.0)
     if html.status_code == 404:
-        return ConnectionAbortedError('Page not found.')
+        raise PageNotExistError('Page not found.')
     else:
         if html.status_code == 200:
             expected_length = html.headers.get('Content-Length')
@@ -123,9 +173,9 @@ def get_page_text(url, proxies):
                 if actual_length == expected_length:
                     return html.text
                 else:
-                    raise IOError('incomplete read')
+                    raise IncompleteReadError('incomplete read')
         else:
-            raise IOError('access denied')
+            raise OtherHTTPError('Some other return: {0}'.format(html.status_code))
 
 def proxy_iterate(url):
     while True:
@@ -135,9 +185,10 @@ def proxy_iterate(url):
         try:
             html = get_page_text(url, proxy)
             return html, proxy
-        except ConnectionAbortedError as err:
-            return err        
-        except:
+        except PageNotExistError as err:
+            raise err
+        except Exception as err:
+            print('Hit error: {0}'.format(err))
             continue
 
 def find_page_num(html):
