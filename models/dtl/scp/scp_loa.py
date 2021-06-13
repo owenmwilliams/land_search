@@ -48,23 +48,19 @@ def scp_iter():
             today = date.today()
             path = '{0}/{1}'.format(today.strftime("%Y-%m-%d"), ret_cty['State'][i]).replace(' ', '_')
             file_name = ret_cty['County'][i].replace(' ', '_')
-            print(path, '...', file_name)
             sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)            
             err = 'None'            
         except PageNotExistError as err:
-            print('Handling error:', err, '. Skipping to next county.')
             err = str(err)
             pDF = pd.DataFrame({'A' : []})
             value = 'False'
             pass
         except MaxRetriesError as err:
-            print('Handling error:', err, '. Skipping to next county.')
             err = str(err)
             pDF = pd.DataFrame({'A' : []})
             value = 'False'
             pass
         except OtherHTTPError as err:
-            print('Handling error:', err, '. Skipping to next county.')
             err = str(err)
             pDF = pd.DataFrame({'A' : []})
             value = 'False'
@@ -130,7 +126,6 @@ def scp_loa_cty(county, state):
                 st.extend(stn)
                 break
             except (PageNotExistError, OtherHTTPError) as err:
-                print('Raising error: {0}'.format(err))
                 raise err
             except:
                 pass
@@ -192,7 +187,6 @@ def proxy_iterate(url):
     while proxy_try <5:
         collector = proxyscrape.get_collector('my-collector')
         proxy = get_https_proxy(collector)
-        print(proxy)
         try:
             html = get_page_text(url, proxy)
             return html, proxy
@@ -200,7 +194,6 @@ def proxy_iterate(url):
             raise err
         except Exception as err:
             proxy_try = proxy_try+1
-            print('Hit error: {0}. MOVING TO TRY {1}'.format(err, proxy_try))
             continue
 
 def find_page_num(html):
