@@ -41,7 +41,8 @@ def scp_iter():
     print("Counties to attempt: {0}".format(len(ret_cty)))
     for i in range(len(ret_cty)):
         try:
-            pDF = scp_loa_cty(ret_cty['County'][i], ret_cty['State'][i])
+            value, pDF = scp_loa_cty(ret_cty['County'][i], ret_cty['State'][i])
+            print(value)
             print(pDF)
             today = date.today()
             path = '{0}/{1}'.format(today.strftime("%Y-%m-%d"), ret_cty['State'][i]).replace(' ', '_')
@@ -49,6 +50,9 @@ def scp_iter():
             print(path, '...', file_name)
             sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
         except PageNotExistError as err:
+            print('Handling error:', err, '. Skipping to next county.')
+            pass
+        except MaxRetriesError as err:
             print('Handling error:', err, '. Skipping to next county.')
             pass
         except OtherHTTPError as err:
@@ -73,12 +77,20 @@ def scp_loa_cty(county, state):
     
     #url string
     cty_url_1 = build_url(county, state, 1)
-    try:
-        pg1_text, proxy = proxy_iterate(cty_url_1)
-    except PageNotExistError as err:
-        raise
+        
+    #getting page 1
+    for attempt in range(10):
+        try:
+            pg1_text, proxy = proxy_iterate(cty_url_1)
+            break
+        except PageNotExistError as err:
+            raise
+        except:
+            pass
     else:
-        pg1_text, proxy = proxy_iterate(cty_url_1)
+        raise MaxRetriesError('Exceeded max tries.')
+    
+    #parsing page 1
     total_pages = find_page_num(pg1_text)
     prc1, acr1, loc1, cty1, st1 = pg_parse(pg1_text, county, state)
 
@@ -87,35 +99,14 @@ def scp_loa_cty(county, state):
     loc.extend(loc1)
     cty.extend(cty1)
     st.extend(st1)
-    
-    tries = 0
+
+    #getting all the other pages    
+    return_value = 'Complete'
 
     for i in range(total_pages - 1):
         cty_url = build_url(county, state, i+2)
-        try:
-            pg_text = get_page_text(cty_url, proxy)
-            prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
-            prc.extend(prcn)
-            acr.extend(acrn)
-            loc.extend(locn)
-            cty.extend(ctyn)
-            st.extend(stn)
-        except (PageNotExistError, OtherHTTPError) as err:
-            print('Raising error: {0}'.format(err))
-            raise err
-        except IncompleteReadError():
-            pg_text = get_page_text(cty_url, proxy)
-            prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
-            prc.extend(prcn)
-            acr.extend(acrn)
-            loc.extend(locn)
-            cty.extend(ctyn)
-            st.extend(stn)            
-        else:
-            if tries <= 10:
-                print('Try number: {0}'.format(tries))
-                tries = tries + 1
-                pg_text, proxy = proxy_iterate(cty_url)
+        for attempt in range(10):
+            try:
                 pg_text = get_page_text(cty_url, proxy)
                 prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
                 prc.extend(prcn)
@@ -123,14 +114,17 @@ def scp_loa_cty(county, state):
                 loc.extend(locn)
                 cty.extend(ctyn)
                 st.extend(stn)
-            else:
-                raise MaxRetriesError('Exceeded max tries.')
+                break
+            except (PageNotExistError, OtherHTTPError) as err:
+                print('Raising error: {0}'.format(err))
+                raise err
+            except:
+                pass
+        else:
+            return_value = 'Incomplete'
 
     df = pd.DataFrame(list(zip(prc, acr, loc, cty, st)), columns = ['Price', 'Acreage', 'Location', 'County', 'State'])
-    pd.set_option("max_rows", None)
-    pd.set_option("max_columns", None)
-    pd.set_option ("max_colwidth", 30)
-    return df  
+    return return_value, df  
 
 def pg_parse(html, county, state):
     prc = []
@@ -161,9 +155,11 @@ def get_page_text(url, proxies):
     s = requests.session()
     s.keep_alive = False
     headers={'User-Agent': 'Mozilla/5.0'}
-    html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=20.0)
+    html = requests.get(url, verify=False, headers=headers, proxies=proxies, timeout=30)
     if html.status_code == 404:
         raise PageNotExistError('Page not found.')
+    elif html.status_code == 500:
+        raise PageNotExistError('Server error.')
     else:
         if html.status_code == 200:
             expected_length = html.headers.get('Content-Length')
@@ -178,7 +174,8 @@ def get_page_text(url, proxies):
             raise OtherHTTPError('Some other return: {0}'.format(html.status_code))
 
 def proxy_iterate(url):
-    while True:
+    proxy_try = 0
+    while proxy_try <5:
         collector = proxyscrape.get_collector('my-collector')
         proxy = get_https_proxy(collector)
         print(proxy)
@@ -188,7 +185,8 @@ def proxy_iterate(url):
         except PageNotExistError as err:
             raise err
         except Exception as err:
-            print('Hit error: {0}'.format(err))
+            proxy_try = proxy_try+1
+            print('Hit error: {0}. MOVING TO TRY {1}'.format(err, proxy_try))
             continue
 
 def find_page_num(html):
