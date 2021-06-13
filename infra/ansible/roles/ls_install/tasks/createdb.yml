@@ -66,6 +66,7 @@
     - "{{ ls_data_dir }}/sql/dat/dat-countylatlong.sql"
     - "{{ ls_data_dir }}/sql/dat/dat-placeairports.sql"
     - "{{ ls_data_dir }}/sql/dat/dat-placerecreation.sql"
+    - "{{ ls_data_dir }}/sql/dat/dat-loascpmetadata.sql"
     - "{{ ls_data_dir }}/sql/fn-landvalueEstimate.sql"
     - "{{ ls_data_dir }}/sql/fn-yearpopcostshareairLookup.sql"
     - "{{ ls_data_dir }}/sql/fn-yearpopcostshareairparkLookup.sql"

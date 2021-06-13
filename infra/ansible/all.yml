@@ -1,20 +1,20 @@
 ---
 
-# - hosts: all
-#   become: yes
-#   become_user: root
-#   tasks:
-#     - name: "[COMMON] Configure /etc/hosts"
-#       lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}} {{item}}" state=present
-#       when: hostvars[item].ansible_default_ipv4.address is defined
-#       with_items: "{{ groups['all'] }}"
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+    - name: "[COMMON] Configure /etc/hosts"
+      lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}} {{item}}" state=present
+      when: hostvars[item].ansible_default_ipv4.address is defined
+      with_items: "{{ groups['all'] }}"
 
-#     - name: "[COMMON] Install a valid python in OpenSUSE"
-#       command: zypper -n in python python-xml
-#       when: ansible_os_family == "Suse"
+    - name: "[COMMON] Install a valid python in OpenSUSE"
+      command: zypper -n in python python-xml
+      when: ansible_os_family == "Suse"
 
-#     - hostname:
-#         name: "{{ inventory_hostname }}"
+    - hostname:
+        name: "{{ inventory_hostname }}"
 
 - hosts: masters,workers
   become: yes
@@ -29,23 +29,23 @@
     - hadoop
     - spark
 
-# - hosts: ssd_mount
-#   become: yes
-#   become_user: root
-#   roles:
-#     - ssd
+- hosts: ssd_mount
+  become: yes
+  become_user: root
+  roles:
+    - ssd
 
-# - hosts: postgresql
-#   become: yes
-#   become_user: root
-#   roles:
-#     - postgresql
+- hosts: postgresql
+  become: yes
+  become_user: root
+  roles:
+    - postgresql
 
-# - hosts: ls_install
-#   become: yes
-#   become_user: root
-#   roles:
-#     - ls_install
+- hosts: ls_install
+  become: yes
+  become_user: root
+  roles:
+    - ls_install
 
 # - hosts: zeppelin
 #   become: yes

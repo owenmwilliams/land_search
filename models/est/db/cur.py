@@ -5,7 +5,7 @@ def con_cur():
     host = socket.gethostname()
 
     if host == 'pi0':
-        db = 'v015'
+        db = 'v016'
         port = "5432"
     else:
         db = "owenwilliams"
