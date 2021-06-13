@@ -4,6 +4,7 @@ import est.fltr.comps as comps
 import est.calc.constr as constr
 import est.calc.comp_assess as comp_assess
 import dtl.wrt.wrt_hdfs as wrt_hdfs
+import dtl.scp.scp_loa as scp_loa
 from datetime import datetime
 import pandas as pd
 import os
@@ -93,4 +94,11 @@ def hdfs_dl(api_gateway):
     wrt_hdfs.to_hdfs(api_gateway)
     print('*****')
     print('Successfully updated %s' % api_gateway)
+    print('#####')
+
+def hdfs_scp():
+    print('*****')
+    x = datetime.now()
+    scp_loa.scp_iter()
+    print(datetime.now()-x)
     print('#####')
