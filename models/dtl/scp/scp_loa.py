@@ -203,6 +203,7 @@ def find_page_num(html):
         return 1
 
 def build_url(county, state, page):
+    county = county.replace("'","")
     cty_url = '{0}-{1}'.format(county, state).replace(' ', '-')
     url = "https://www.landsofamerica.com/{0}/all-land/no-house/page-{1}".format(cty_url, page)
     return url
