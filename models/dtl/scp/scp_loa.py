@@ -2,6 +2,7 @@ from socket import error
 import dtl.wrt.wrt_hdfs as sv
 from bs4 import BeautifulSoup
 from datetime import date
+import datetime
 from est.db.cur import con_cur
 import pandas as pd
 import requests
@@ -39,26 +40,39 @@ def scp_iter():
     ret_cty = ret_cty.sample(frac=1).reset_index(drop=True)
     print("Counties already downloaded: {0}".format(len(cty_array)-len(ret_cty)))
     print("Counties to attempt: {0}".format(len(ret_cty)))
+
     for i in range(len(ret_cty)):
+        start_time = datetime.now()
         try:
             value, pDF = scp_loa_cty(ret_cty['County'][i], ret_cty['State'][i])
-            print(value)
-            print(pDF)
             today = date.today()
             path = '{0}/{1}'.format(today.strftime("%Y-%m-%d"), ret_cty['State'][i]).replace(' ', '_')
             file_name = ret_cty['County'][i].replace(' ', '_')
             print(path, '...', file_name)
-            sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)
+            sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)            
+            err = 'None'            
         except PageNotExistError as err:
             print('Handling error:', err, '. Skipping to next county.')
+            err = str(err)
+            pDF = pd.DataFrame({'A' : []})
+            value = 'False'
             pass
         except MaxRetriesError as err:
             print('Handling error:', err, '. Skipping to next county.')
+            err = str(err)
+            pDF = pd.DataFrame({'A' : []})
+            value = 'False'
             pass
         except OtherHTTPError as err:
             print('Handling error:', err, '. Skipping to next county.')
+            err = str(err)
+            pDF = pd.DataFrame({'A' : []})
+            value = 'False'
             pass
-
+        end_time = datetime.now()
+        duration = end_time - start_time
+        number_of_records = len(pDF)
+        scp_meta_save(ret_cty['County'][i], ret_cty['State'][i], start_time, duration, value, err, number_of_records)
 
 #Takes county name and state abbreviation and returns dataframe with acreage, cost, and location
 def scp_loa_cty(county, state):
@@ -101,7 +115,7 @@ def scp_loa_cty(county, state):
     st.extend(st1)
 
     #getting all the other pages    
-    return_value = 'Complete'
+    return_value = 'True'
 
     for i in range(total_pages - 1):
         cty_url = build_url(county, state, i+2)
@@ -121,7 +135,7 @@ def scp_loa_cty(county, state):
             except:
                 pass
         else:
-            return_value = 'Incomplete'
+            return_value = 'False'
 
     df = pd.DataFrame(list(zip(prc, acr, loc, cty, st)), columns = ['Price', 'Acreage', 'Location', 'County', 'State'])
     return return_value, df  
@@ -235,3 +249,12 @@ def existing_cty():
     counties.drop(columns=['Core_dir', 'Web_dir', 'Date'], inplace=True)
     counties['County'] = counties['County'].str.replace('_', ' ')
     return counties
+
+#Save to meta table stats
+def scp_meta_save(county, state, start_time, duration, completeness, err, number): 
+    cur, con = con_cur()
+    cur.execute("""
+                    INSERT INTO loa_scp_meta(county, state, start_time, duration, completeness, error, number_of_records)
+                    VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6})
+                """.format(county, state, start_time, duration, completeness, err, number))
+    con.close()
