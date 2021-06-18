@@ -2,7 +2,7 @@ from socket import error
 import dtl.wrt.wrt_hdfs as sv
 from bs4 import BeautifulSoup
 from datetime import date
-import datetime
+from datetime import datetime
 from est.db.cur import con_cur
 import pandas as pd
 import requests
@@ -30,7 +30,7 @@ class OtherHTTPError(Error):
     """Raised when multiple retries have failed"""
     pass
 
-#TODO: add a 'if file exists or was recently downloaded, skip' and IP rotator, set random intervals between requests
+#TODO: pass through successful proxy for 10-15 counties; add home proxy for a couple every 1-2 hours; way to have hdfs save and next scp run in parallel?
 def scp_iter():
     collector = proxyscrape.create_collector('my-collector', 'https')
     cty_array = fnd_cty()
@@ -50,25 +50,16 @@ def scp_iter():
             file_name = ret_cty['County'][i].replace(' ', '_')
             sv.hdfs_save('/ls_raw_dat/lands_of_america/{0}'.format(path), '{0}'.format(file_name), pDF)            
             err = 'None'            
-        except PageNotExistError as err:
-            err = str(err)
+        except Exception as exc:
+            err = str(exc)
             pDF = pd.DataFrame({'A' : []})
             value = 'False'
             pass
-        except MaxRetriesError as err:
-            err = str(err)
-            pDF = pd.DataFrame({'A' : []})
-            value = 'False'
-            pass
-        except OtherHTTPError as err:
-            err = str(err)
-            pDF = pd.DataFrame({'A' : []})
-            value = 'False'
-            pass
-        end_time = datetime.now()
-        duration = end_time - start_time
-        number_of_records = len(pDF)
-        scp_meta_save(ret_cty['County'][i], ret_cty['State'][i], start_time, duration, value, err, number_of_records)
+        finally: 
+            end_time = datetime.now()
+            duration = end_time - start_time
+            number_of_records = len(pDF)
+            scp_meta_save(ret_cty['County'][i], ret_cty['State'][i], start_time, duration, value, err, number_of_records)
 
 #Takes county name and state abbreviation and returns dataframe with acreage, cost, and location
 def scp_loa_cty(county, state):
@@ -102,6 +93,8 @@ def scp_loa_cty(county, state):
     
     #parsing page 1
     total_pages = find_page_num(pg1_text)
+    if total_pages > 20:
+        raise IncompleteReadError('More than 20 pages, check URL.')
     prc1, acr1, loc1, cty1, st1 = pg_parse(pg1_text, county, state)
 
     prc.extend(prc1)
@@ -112,6 +105,36 @@ def scp_loa_cty(county, state):
 
     #getting all the other pages    
     return_value = 'True'
+
+    #can we turn this into a parallelized process?
+
+# Parallelizing using Pool.map()
+# import multiprocessing as mp
+
+# pool = mp.Pool(mp.cpu_count())
+
+# results = pool.map(howmany_within_range_rowonly, [row for row in data])
+# results = [pool.apply(get_pg2+, args=(county, state, proxy, i+2)) for i in range(total_pages-1)]
+# pool.close()
+
+# def get_pg2+(county, state, proxy, page):
+    # for attempt in range(10):
+    #     try:
+    #         pg_text = get_page_text(cty_url, proxy)
+    #         prcn, acrn, locn, ctyn, stn = pg_parse(pg_text, county, state)
+    #         return prcn, arcn, locn, ctyn, stn
+    #         break
+    #     except (PageNotExistError, OtherHTTPError) as err:
+    #         raise err
+    #     except:
+    #         pass
+    # else:
+    #     return_value = 'False'
+
+# for i 
+
+# print(results[:10])
+
 
     for i in range(total_pages - 1):
         cty_url = build_url(county, state, i+2)
@@ -247,7 +270,16 @@ def existing_cty():
 def scp_meta_save(county, state, start_time, duration, completeness, err, number): 
     cur, con = con_cur()
     cur.execute("""
-                    INSERT INTO loa_scp_meta(county, state, start_time, duration, completeness, error, number_of_records)
-                    VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6})
-                """.format(county, state, start_time, duration, completeness, err, number))
+                    INSERT INTO public.loa_scp_meta(county, state, start_time, duration, completeness, error, number_of_records)
+                    VALUES(%(cty)s, %(st)s, %(strt)s, %(dur)s, %(compl)s, %(error)s, %(num)s);
+                """,
+                {'cty':county, 'st':state, 'strt':start_time, 'dur':duration, 'compl':completeness, 'error':err, 'num':number}
+    con.commit()
     con.close()
+
+
+    cur.execute("""
+...     INSERT INTO some_table (an_int, a_date, another_date, a_string)
+...     VALUES (%(int)s, %(date)s, %(date)s, %(str)s);
+...     """,
+...     {'int': 10, 'str': "O'Reilly", 'date': datetime.date(2005, 11, 18)})
